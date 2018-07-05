@@ -1,0 +1,14 @@
+{
+    "static_info" : {
+        "random_seed": 157,
+        "np_seed": 213
+    },
+    "run_modules":[
+        {
+            "func" : "split_graph",
+            "params": {
+                "func" : "normal_unin_find"
+            }
+        }
+    ]
+}
