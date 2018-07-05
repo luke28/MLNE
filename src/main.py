@@ -18,6 +18,9 @@ def init(args, params, whole_params):
     info["whole_params"] = whole_params
     info["conf_name"] = args.conf
     info["res_home"] = os.path.join(os.path.join(RES_PATH, args.conf), info["time"])
+    #info["data_path"] = DATA_PATH
+    info["network_path"] = os.path.join(DATA_PATH, params["network_file"])
+    info["num_nodes"] = params["num_nodes"]
     # if not exists, then mkdir
     ct.mkdir(info["res_home"])
 
@@ -39,10 +42,7 @@ def main():
         mdl_name = module["func"]
         mdl_params = module["params"]
         mdl = __import__(mdl_name + '.' + mdl_params["func"], fromlist = [mdl_name])
-        print("Start %s ..." % (mdl_name, ))
         res[mdl_name] = getattr(mdl, mdl_name)(mdl_params, info = info, res = res, mdl_name = mdl_name)
-        print res[mdl_name]
-        print("Finished!")
 
 if __name__ == "__main__":
     main()
