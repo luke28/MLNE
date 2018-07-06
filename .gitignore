@@ -104,7 +104,7 @@ venv.bak/
 .mypy_cache/
 
 tmp/
-#data/
+data/
 res/
 log/
 *.swp
