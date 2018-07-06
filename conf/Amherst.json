@@ -2,8 +2,8 @@
     "static_info" : {
         "random_seed": 157,
         "np_seed": 213,
-        "network_file": "test_nw.dat",
-        "num_nodes": 10
+        "network_file": "amherst_nw.dat",
+        "num_nodes": 2235
     },
     "run_modules":[
         {
@@ -16,8 +16,8 @@
             "func" : "split_graph",
             "params": {
                 "func" : "normal_unin_find",
-                "num_community": 2,
-                "max_nodes": 10
+                "num_community": 10,
+                "max_nodes": 500
             }
         }
     ]
