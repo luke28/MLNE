@@ -14,13 +14,14 @@ from utils import common_tools as ct
 
 def init(args, params, whole_params):
     info = {}
+    for k, w in params.items():
+        info[k] = w
     info["time"] = ct.get_time_str()
     info["whole_params"] = whole_params
     info["conf_name"] = args.conf
     info["res_home"] = os.path.join(os.path.join(RES_PATH, args.conf), info["time"])
-    #info["data_path"] = DATA_PATH
-    info["network_path"] = os.path.join(DATA_PATH, params["network_file"])
-    info["num_nodes"] = params["num_nodes"]
+    info["data_path"] = DATA_PATH
+    info["network_path"] = os.path.join(DATA_PATH, params["network_path"])
     # if not exists, then mkdir
     ct.mkdir(info["res_home"])
 
