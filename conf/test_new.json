@@ -16,6 +16,12 @@
                 "func": "simple_init",
                 "is_directed": false
             }
+        },
+        {
+            "func": "split_graph",
+            "params":{
+                "func": "simple_split"
+            }
         }
     ]
 }
