@@ -1,113 +1,94 @@
 import numpy as np
 import os
-import Queue
+import io
+import pickle
+from Queue import PriorityQueue as pq
+import random
+import json
+
 from utils import common_tools as ct
+from utils import graph_handler as gh
+from file_outstream import FileOutstream
 
-class UnionFind(object):
-    def __init__(self, params):
-        self.n = params["num_nodes"]
-        self.k = params["num_community"]
-        self.max_nodes = params["max_nodes"]
-        self.top_set = params["top_set"]
-        self.max_nodes_normal = (self.k * self.max_nodes - self.n) / (self.k - 1)
-
-        self.fa = np.array([i for i in xrange(self.n)], dtype = np.int32)
-        self.num = np.ones((self.n, ), dtype = np.int32)
-
-    def find(self, x):
-        if x == self.fa[x]:
-            return x
-        self.fa[x] = self.find(self.fa[x])
-        return self.fa[x]
-
-    def union(self, x, y):
-        x = self.find(x)
-        y = self.find(y)
-        if x == y:
-            return True
-        if x in self.top_set and y in self.top_set \
-                or self.num[x] + self.num[y] > self.max_nodes:
-                    return False
-        if x not in self.top_set and y not in self.top_set \
-                and (self.num[x] > self.max_nodes_normal or self.num[y] > self.max_nodes_normal):
-                    return False
-        if y in self.top_set:
-            x, y = y, x
-        self.num[x] += self.num[y]
-        self.fa[y] = x
-        return True
-
-    def refine(self):
-        q = Queue.PriorityQueue()
-        for u in self.top_set:
-            q.put_nowait((self.num[u], u))
-        for u in xrange(self.n):
-            v = self.find(u)
-            if v not in self.top_set:
-                it = q.get()
-                self.fa[v] = it[1]
-                self.num[it[1]] += self.num[v]
-                q.put_nowait((self.num[it[1]], it[1]))
-        res = {i : {"num" : self.num[i], "nodes" : set()} for i in self.top_set}
-        for u in xrange(self.n):
-            v = self.find(u)
-            res[v]["nodes"].add(u)
-        return res
-
-def params_handler(params, info, res):
+def params_handler(params, info, pre_res, **kwargs):
     params["num_nodes"] = info["num_nodes"]
-    if "num_community" not in params:
-        params["num_community"] = 10
-    if "max_nodes" not in params:
-        params["max_nodes"] = min(500, params["num_nodes"])
-    params["network_path"] = res["count_graph"]["network_path"]
-    params["degree_distrib"] = res["count_graph"]["degree_distrib"]
+    params["community_size"] = info["community_size"]
+    params["num_community"] = info["num_community"]
+    params["num_top"] = info["num_top"]
+    params["res_path"] = info["res_home"]
+    params["network_path"] = info["network_path"]
+    params["dim"] = info["embedding_size"]
+    params["tmp_path"] = os.path.join(info["res_home"], "tmp")
+    ct.mkdir(params["tmp_path"])
 
+    ct.check_attr(params, "is_directed", False)
+
+    if "data_path" in params:
+        params["data_path"] = os.path.join(info["home_path"], params["data_path"])
+    else:
+        params["data_path"] = params["res_path"]
+
+    return {}
 
 @ct.module_decorator
 def split_graph(params, info, pre_res, **kwargs):
-    pre_res = params_handler(params, info, res)
-    n = params["num_nodes"]
-    k = params["num_community"]
-    #print n, k
-    #print np.argpartition(params["degree_distrib"], n-k)
-    params["top_set"] = set(np.argpartition(params["degree_distrib"], n - k)[-k:])
-    uf = UnionFind(params)
-    ret = {}
-    #print params["top_set"]
-    with open(params["network_path"], "r") as f:
-        for line in f:
-            line = line.strip()
-            if len(line) == 0:
-                continue
-            items = line.split()
-            if len(items) != 2:
-                continue
-            u, v = [int(i) for i in items]
-            flag = uf.union(u, v)
-            #print u, v, flag
-    ret["community_info"] = uf.refine()
-    
-    home_path = os.path.join(info["res_home"], "split_graph")
-    com_info = ret["community_info"]
-    ct.mkdir(home_path)
-    wf = {}
-    for u in com_info:
-        com_info[u]["file_path"] = os.path.join(home_path, str(u) + ".dat")
-        wf[u] = open(com_info[u]["file_path"], "w")
-    with open(params["network_path"], "r") as f:
-        for line in f:
-            line = line.strip()
-            if len(line) == 0:
-                continue
-            items = line.split()
-            if len(items) != 2:
-                continue
-            u = uf.find(int(items[0]))
-            v = uf.find(int(items[1]))
-            if u != v:
-                continue
-            wf[u].write(items[0] + "\t" + items[1] + "\n")
-    for it in wf:
-        wf[it].close()
-    return ret
+    res = params_handler(params, info, pre_res)
+    p = ct.obj_dic(params)
+
+    # read top-k
+    with io.open(os.path.join(p.data_path, "topk_info.pkl"), "rb") as f:
+        topk_params = pickle.load(f)
+    top_set = set(v for k, v in topk_params["map"].items())
+
+    #get node lst
+    G = gh.load_unweighted_digraph(p.network_path, p.is_directed)
+    node_lst = []
+    for u in G:
+        if u not in top_set:
+            node_lst.append(u)
+    random.shuffle(node_lst)
+    print node_lst
+    group = {u : idx / p.community_size for idx, u in enumerate(node_lst)}
+    print group
+    tmp_files = [FileOutstream(os.path.join(p.tmp_path, "%d" % i)) for i in xrange(p.num_community)]
+    for i in xrange(p.num_community):
+        with io.open(os.path.join(p.data_path, "%d_info.pkl" % i), "rb") as f:
+            sub_params = pickle.load(f)
+        for j in sub_params["map"]:
+            s = json.dumps((sub_params["embeddings"][j].tolist(),
+                sub_params["weights"][j].tolist(),
+                sub_params["map"][j]))
+            print s
+            u = sub_params["map"][j]
+            tmp_files[group[u]].writeline(s)
+    del tmp_files
+
+    num_ignore = 0
+    edge_files = [FileOutstream(os.path.join(p.res_path, "%d_edges" % i)) for i in xrange(p.num_community)]
+    for e in G.edges():
+        if e[0] in top_set and e[1] in top_set:
+            for idx, f in enumerate(edge_files):
+                edge_files[idx].write("%d\t%d\n" % e)
+        elif e[0] in top_set:
+            edge_files[group[e[1]]].write("%d\t%d\n" % e)
+        elif e[1] in top_set or group[e[0]] == group[e[1]]:
+            edge_files[group[e[0]]].write("%d\t%d\n" % e)
+        else:
+            num_ignore += 1
+    print num_ignore
+
+
+    '''
+    def deal_subgraph(idx, st, ed):
+        sub_params = {"embeddings": pi.initialize_embeddings(ed - st, p.dim),
+                "weights": pi.initialize_weights(ed - st, p.dim),
+                "map" : {i : node_lst[st + i] for i in xrange(ed - st)}}
+        #print sub_params
+        with open(os.path.join(p.res_path, "%d_info.pkl" % idx), "w") as f:
+            pickle.dump(topk_params, f)
+
+    for i in xrange(num_community):
+        deal_subgraph(i, i * p.community_size, min((i + 1) * p.community_size, remain_size))
+    '''    
+    #res["data_path"] = p.res_path
+    return res

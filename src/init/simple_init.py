@@ -1,5 +1,6 @@
 import numpy as np
 import os
+import io
 import pickle
 from Queue import PriorityQueue as pq
 
@@ -55,19 +56,21 @@ def init(params, info, **kwargs):
     topk_params = {"embeddings" : pi.initialize_embeddings(p.num_top, p.dim),
             "weights" : pi.initialize_weights(p.num_top, p.dim),
             "map" : {i : top_lst[i]  for i in xrange(len(top_lst))}}
-    print topk_params
-    with open(os.path.join(p.res_path, "topk_info.pkl"), "w") as f:
+    #print topk_params
+    with io.open(os.path.join(p.res_path, "topk_info.pkl"), "wb") as f:
         pickle.dump(topk_params, f)
 
     def deal_subgraph(idx, st, ed):
         sub_params = {"embeddings": pi.initialize_embeddings(ed - st, p.dim),
                 "weights": pi.initialize_weights(ed - st, p.dim),
                 "map" : {i : node_lst[st + i] for i in xrange(ed - st)}}
-        print sub_params
-        with open(os.path.join(p.res_path, "%d_info.pkl" % idx), "w") as f:
-            pickle.dump(topk_params, f)
+        #print sub_params
+        with io.open(os.path.join(p.res_path, "%d_info.pkl" % idx), "wb") as f:
+            pickle.dump(sub_params, f)
 
     for i in xrange(num_community):
         deal_subgraph(i, i * p.community_size, min((i + 1) * p.community_size, remain_size))
 
+    info["num_community"] = num_community
+    res["data_path"] = p.res_path
     return res
