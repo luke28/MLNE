@@ -55,6 +55,8 @@ def init(params, info, **kwargs):
         num_community += 1
     topk_params = {"embeddings" : pi.initialize_embeddings(p.num_top, p.dim),
             "weights" : pi.initialize_weights(p.num_top, p.dim),
+            "in_degree": [G.node[i]["in_degree"] for i in top_lst],
+            "out_degree": [G.node[i]["out_degree"] for i in top_lst],
             "map" : {i : top_lst[i]  for i in xrange(len(top_lst))}}
     #print topk_params
     with io.open(os.path.join(p.res_path, "topk_info.pkl"), "wb") as f:
@@ -71,6 +73,29 @@ def init(params, info, **kwargs):
     for i in xrange(num_community):
         deal_subgraph(i, i * p.community_size, min((i + 1) * p.community_size, remain_size))
 
+    # calculate prob
+    def cal_q1():
+        K = float(num_community)
+        na = float(p.community_size)
+        n = p.num_nodes - p.num_top
+        nr = float(n % p.community_size)
+        n = float(n)
+        return (K - 1) * na / n * (na - 1) / (n - 1) + nr * (nr - 1) / n / (n - 1)
+
+    info["q"] = [cal_q1(), 1.0, float(num_community)]
+    tmp = p.num_nodes - p.num_top
+    info["Z"] = [0.0, info["q"][0] * tmp * tmp + \
+            tmp * p.num_top + info["q"][2] * p.num_top * p.num_top]
+    for e in G.edges():
+        if e[0] in top_set and e[1] in top_set:
+            info["Z"][0] += info["q"][2]
+        elif e[0] in top_set or e[1] in top_set:
+            info["Z"][0] += 1
+        else:
+            info["Z"][0] += info["q"][0]
+
+    info["total_degree"] = G.graph["degree"]
     info["num_community"] = num_community
     res["data_path"] = p.res_path
+    print info
     return res

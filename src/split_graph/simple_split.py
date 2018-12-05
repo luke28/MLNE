@@ -76,19 +76,27 @@ def split_graph(params, info, pre_res, **kwargs):
         else:
             num_ignore += 1
     print num_ignore
+    del edge_files
 
+    for i in xrange(p.num_community):
+        embeddings = []
+        weights = []
+        mapp = {}
+        with io.open(os.path.join(p.tmp_path, "%d" % i), "rb") as f:
+            for idx, line in enumerate(f):
+                line = line.strip()
+                if len(line) == 0:
+                    continue
+                embed, weight, u = json.loads(line)
+                embeddings.append(embed)
+                weights.append(weight)
+                mapp[idx] = u
 
-    '''
-    def deal_subgraph(idx, st, ed):
-        sub_params = {"embeddings": pi.initialize_embeddings(ed - st, p.dim),
-                "weights": pi.initialize_weights(ed - st, p.dim),
-                "map" : {i : node_lst[st + i] for i in xrange(ed - st)}}
-        #print sub_params
-        with open(os.path.join(p.res_path, "%d_info.pkl" % idx), "w") as f:
-            pickle.dump(topk_params, f)
-
-    for i in xrange(num_community):
-        deal_subgraph(i, i * p.community_size, min((i + 1) * p.community_size, remain_size))
-    '''    
+        sub_params = {"embeddings": np.array(embeddings),
+                "weights": np.array(weights),
+                "map": mapp}
+        print sub_params
+        with io.open(os.path.join(p.res_path, "%d_info.pkl" % i), "wb") as f:
+            pickle.dump(sub_params, f)
     #res["data_path"] = p.res_path
     return res
