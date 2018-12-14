@@ -2,11 +2,11 @@
     "static_info" : {
         "random_seed": 157,
         "np_seed": 213,
-        "network_path": "amherst_nw.dat",
-        "num_nodes": 2235,
-        "community_size": 2235,
-        "num_top": 100,
-        "embedding_size": 20
+        "network_path": "dolphins_nw.dat",
+        "num_nodes": 62,
+        "community_size": 20,
+        "num_top": 5,
+        "embedding_size": 10
 
     },
     "run_modules":[
@@ -21,7 +21,7 @@
             "func": "loop",
             "params":{
                 "func": "simple_loop",
-                "times": 1,
+                "times": 30,
                 "loop_modules":[
                     {
                         "func": "split_graph",
@@ -36,8 +36,8 @@
                             "learn_rate": 0.01,
                             "num_sampled": 4,
                             "optimizer": "AdamOptimizer",
-                            "epoch_num": 50000,
-                            "show_num": 5000,
+                            "epoch_num": 1000,
+                            "show_num": 300,
                             "batch_size": 100
                         }
                     }
@@ -52,7 +52,7 @@
                     "func": "logistic",
                     "n_jobs": 2
                 },
-                "ground_truth": "amherst_flag.dat",
+                "ground_truth": "dolphins_flag.dat",
                 "test_size": 0.3,
                 "times": 10
             }

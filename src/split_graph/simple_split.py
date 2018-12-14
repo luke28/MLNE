@@ -57,7 +57,9 @@ def split_graph(params, info, pre_res, **kwargs):
         for j in sub_params["map"]:
             s = json.dumps((sub_params["embeddings"][j].tolist(),
                 sub_params["weights"][j].tolist(),
-                sub_params["map"][j]))
+                sub_params["map"][j],
+                sub_params["in_degree"][j],
+                sub_params["out_degree"][j]))
             print s
             u = sub_params["map"][j]
             tmp_files[group[u]].writeline(s)
@@ -82,19 +84,25 @@ def split_graph(params, info, pre_res, **kwargs):
         embeddings = []
         weights = []
         mapp = {}
+        inds = []
+        outds = []
         with io.open(os.path.join(p.tmp_path, "%d" % i), "rb") as f:
             for idx, line in enumerate(f):
                 line = line.strip()
                 if len(line) == 0:
                     continue
-                embed, weight, u = json.loads(line)
+                embed, weight, u, ind, outd = json.loads(line)
                 embeddings.append(embed)
                 weights.append(weight)
                 mapp[idx] = u
+                outds.append(outd)
+                inds.append(ind)
 
         sub_params = {"embeddings": np.array(embeddings),
                 "weights": np.array(weights),
-                "map": mapp}
+                "map": mapp,
+                "in_degree": inds,
+                "out_degree": outds}
         print sub_params
         with io.open(os.path.join(p.res_path, "%d_info.pkl" % i), "wb") as f:
             pickle.dump(sub_params, f)
