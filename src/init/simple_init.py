@@ -65,6 +65,8 @@ def init(params, info, **kwargs):
     def deal_subgraph(idx, st, ed):
         sub_params = {"embeddings": pi.initialize_embeddings(ed - st, p.dim),
                 "weights": pi.initialize_weights(ed - st, p.dim),
+                "in_degree": [G.node[node_lst[st + i]]["in_degree"] for i in xrange(ed - st)],
+                "out_degree": [G.node[node_lst[st + i]]["out_degree"] for i in xrange(ed - st)],
                 "map" : {i : node_lst[st + i] for i in xrange(ed - st)}}
         #print sub_params
         with io.open(os.path.join(p.res_path, "%d_info.pkl" % idx), "wb") as f:

@@ -18,9 +18,43 @@
             }
         },
         {
-            "func": "split_graph",
+            "func": "loop",
             "params":{
-                "func": "simple_split"
+                "func": "simple_loop",
+                "times": 10,
+                "loop_modules":[
+                    {
+                        "func": "split_graph",
+                        "params":{
+                            "func": "simple_split"
+                        }
+                    },
+                    {
+                        "func": "optimize",
+                        "params": {
+                            "func": "optimize_independent",
+                            "learn_rate": 0.01,
+                            "num_sampled": 2,
+                            "optimizer": "AdamOptimizer",
+                            "epoch_num": 300,
+                            "show_num": 50,
+                            "batch_size": 2
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "func": "metric",
+            "params":{
+                "func": "node_classification",
+                "model":{
+                    "func": "logistic",
+                    "n_jobs": 2
+                },
+                "ground_truth": "",
+                "test_size": 0.3,
+                "times": 10
             }
         }
     ]

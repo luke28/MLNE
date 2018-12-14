@@ -4,7 +4,7 @@
         "np_seed": 213,
         "network_path": "amherst_nw.dat",
         "num_nodes": 2235,
-        "community_size": 2235,
+        "community_size": 500,
         "num_top": 100,
         "embedding_size": 20
 
@@ -21,7 +21,7 @@
             "func": "loop",
             "params":{
                 "func": "simple_loop",
-                "times": 1,
+                "times": 10,
                 "loop_modules":[
                     {
                         "func": "split_graph",
