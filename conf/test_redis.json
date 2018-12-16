@@ -1,0 +1,28 @@
+{
+    "static_info" : {
+        "random_seed": 157,
+        "np_seed": 213,
+        "network_path": "test_nw.dat",
+        "num_nodes": 10,
+        "community_size": 2,
+        "num_top": 3,
+        "embedding_size": 3,
+        "redis_maxmemory":200000000
+
+    },
+    "run_modules":[
+        {
+            "func": "init",
+            "params": {
+                "func": "redis_init",
+                "is_directed": false
+            }
+        },
+        {
+            "func": "split_graph",
+            "params":{
+                "func": "simple_split_redis"
+            }
+        }
+    ]
+}
