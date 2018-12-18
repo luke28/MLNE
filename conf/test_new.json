@@ -21,7 +21,7 @@
             "func": "loop",
             "params":{
                 "func": "simple_loop",
-                "times": 10,
+                "times": 1,
                 "loop_modules":[
                     {
                         "func": "split_graph",
@@ -45,17 +45,10 @@
             }
         },
         {
-            "func": "metric",
-            "params":{
-                "func": "node_classification",
-                "model":{
-                    "func": "logistic",
-                    "n_jobs": 2
-                },
-                "ground_truth": "",
-                "test_size": 0.3,
-                "times": 10
-            }
+           "func": "merge_embedding",
+           "params":{
+               "func": "simple_merge"
+           }
         }
     ]
 }
