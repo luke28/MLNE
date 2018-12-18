@@ -15,6 +15,7 @@ class NodeEmbedding(object):
         self.show_num = p.show_num
         self.num_nodes = p.size_subgraph
         self.batch_size = p.batch_size
+        self.log = p.log
         # to do dealing with params
 
         self.tensor_graph = tf.Graph()
@@ -48,11 +49,12 @@ class NodeEmbedding(object):
             #        tf.reduce_sum(tf.log_sigmoid(-self.neg_dot))
             self.loss = -tf.reduce_mean(tf.multiply(tf.log_sigmoid(self.pos_dot), self.pos_weight)) - \
                     tf.reduce_mean(tf.multiply(tf.log_sigmoid(-self.neg_dot), self.neg_weight))
-            self.train_step = getattr(tf.train, self.optimizer)(self.lr).minimize(self.loss)
+            self.train_step =  getattr(tf.train, self.optimizer)(self.lr).minimize(self.loss)
 
 
     def train(self, get_batch, save_path = None): 
-        print("start learning node embedding")
+        print("[+] Start learning node embedding")
+        self.log.info("[+] Start learning node embedding")
         loss = 0.0
         with tf.Session(graph = self.tensor_graph) as sess:
             sess.run(tf.global_variables_initializer())
@@ -66,7 +68,8 @@ class NodeEmbedding(object):
                 self.train_step.run(input_dic)
                 loss += self.loss.eval(input_dic)
                 if (i + 1) % self.show_num == 0:
-                    print(loss / self.show_num)
+                    print("Epoch %d, Loss: %f" % (i + 1, loss / self.show_num))
+                    self.log.info("Epoch %d, Loss: %f" % (i + 1, loss / self.show_num))
                     loss = 0.0
 
             return sess.run(self.w), sess.run(self.c)

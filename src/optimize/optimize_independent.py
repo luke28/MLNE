@@ -18,6 +18,7 @@ def params_handler(params, info, pre_res, **kwargs):
     params["res_path"] = info["res_home"]
     params["network_path"] = info["network_path"]
     params["dim"] = info["embedding_size"]
+    params["log"] = info["log"]
 
     return {}
 
@@ -32,6 +33,8 @@ def optimize(params, info, pre_res, **kwargs):
     top_set = set(v for k, v in topk_params["map"].items())
 
     def deal_subgraph(idx):
+        print("[+] Start deal with the %d-th subgraph" % (idx + 1))
+        p.log.info("[+] Start deal with the %d-th subgraph" % (idx + 1))
         G = gh.load_unweighted_digraph(os.path.join(p.res_path, "%d_edges" % idx), True)
         with io.open(os.path.join(p.res_path, "%d_info.pkl" % idx), "rb") as f:
             sub_params = pickle.load(f)
