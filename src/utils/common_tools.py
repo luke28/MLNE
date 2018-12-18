@@ -115,13 +115,15 @@ def timer(func):
 
 def module_decorator(func):
     def wrapper(*args, **kwargs):
-        print("Start %s ..." % (kwargs["mdl_name"], ))
+        print("[+] Start %s ..." % (kwargs["mdl_name"], ))
         kwargs["info"]["log"].info("Start Module %s" % (kwargs["mdl_name"], ))
         start_time = datetime.now()
         res = func(*args, **kwargs)
         end_time = datetime.now()
-        print("Finished!\nDuring Time: %.2f" % ((end_time - start_time).seconds, ))
-        kwargs["info"]["log"].info("Moddule During Time: %.2f" % ((end_time - start_time).seconds, ))
+        print("[+] Finished!\n[+] During Time: %.2f" % ((end_time - start_time).seconds, ))
+        kwargs["info"]["log"].info("Module During Time: %.2f" % ((end_time - start_time).seconds, ))
+        kwargs["info"]["log"].info("Module Results: " + str(res))
+        print("[+] Module Results: " + str(res))
         return res
     return wrapper
 

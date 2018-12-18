@@ -45,7 +45,7 @@ def main():
         mdl_params = module["params"]
         mdl = __import__(mdl_name + '.' + mdl_params["func"], fromlist = [mdl_name])
         res[mdl_name] = getattr(mdl, mdl_name)(mdl_params, info = info, pre_res = res, mdl_name = mdl_name)
-        print res
+        #print res
 
 if __name__ == "__main__":
     main()

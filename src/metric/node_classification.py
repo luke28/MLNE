@@ -26,10 +26,10 @@ def classification(X, params):
     return acc
 
 def params_handler(params, info, pre_res, **kwargs):
-    params["num_nodes"] = info["num_nodes"]
-    params["num_community"] = info["num_community"]
-    params["dim"] = info["embedding_size"]
-    params["embedding_path"] = info["res_home"]
+    if "embedding_path" in params:
+        os.path.join(info["home_path"], params["embedding_path"])
+    else:
+        params["embedding_path"] = pre_res["merge_embedding"]["embedding_path"]
     params["ground_truth"] = os.path.join(info["data_path"], params["ground_truth"])
     return {}
 
@@ -38,17 +38,9 @@ def metric(params, info, pre_res, **kwargs):
     res = params_handler(params, info, pre_res)
     p = ct.obj_dic(params)
     # load embeddings
-    X = np.empty((p.num_nodes, p.dim), dtype = np.float32)
-    def read_embeddings(path):
-        with io.open(os.path.join(p.embedding_path, path), "rb") as f:
-            sub_params = pickle.load(f)
-            for k, v in sub_params["map"].items():
-                X[v, :] = sub_params["embeddings"][k, :]
-
-    read_embeddings("topk_info.pkl")
-    for i in xrange(p.num_community):
-        read_embeddings("%d_info.pkl" % i)
+    with io.open(p.embedding_path, "rb") as f:
+        X = pickle.load(f)["embeddings"]
 
     res["acc"] = classification(X, params)
-    return res["acc"]
+    return res
 
