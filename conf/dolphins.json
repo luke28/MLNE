@@ -21,7 +21,7 @@
             "func": "loop",
             "params":{
                 "func": "simple_loop",
-                "times": 30,
+                "times": 1,
                 "loop_modules":[
                     {
                         "func": "split_graph",
@@ -42,6 +42,12 @@
                         }
                     }
                 ]
+            }
+        },
+        {
+            "func": "merge_embedding",
+            "params":{
+                "func": "simple_merge"
             }
         },
         {
