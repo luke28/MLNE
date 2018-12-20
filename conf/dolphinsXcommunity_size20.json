@@ -45,6 +45,12 @@
             }
         },
         {
+            "func": "merge_embedding",
+            "params":{
+                "func": "simple_merge"
+            }
+        },
+        {
             "func": "metric",
             "params":{
                 "func": "node_classification",
