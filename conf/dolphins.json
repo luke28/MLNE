@@ -21,7 +21,7 @@
             "func": "loop",
             "params":{
                 "func": "simple_loop",
-                "times": 1,
+                "times": 2,
                 "loop_modules":[
                     {
                         "func": "split_graph",
