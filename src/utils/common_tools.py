@@ -10,6 +10,8 @@ import time
 from datetime import datetime
 from Queue import Queue
 from sklearn.preprocessing import MultiLabelBinarizer
+from memory_profiler import memory_usage
+import gc
 
 def dict_add(d, key, add):
     if key in d:
@@ -113,15 +115,28 @@ def timer(func):
         return res
     return wrapper
 
+
+
 def module_decorator(func):
     def wrapper(*args, **kwargs):
         print("[+] Start %s ..." % (kwargs["mdl_name"], ))
         kwargs["info"]["log"].info("Start Module %s" % (kwargs["mdl_name"], ))
         start_time = datetime.now()
-        res = func(*args, **kwargs)
+        
+        mem_usage, res  = memory_usage((func, args, kwargs),
+                interval = .1,
+                max_usage = True,
+                retval = True)
+        mem_usage = mem_usage[0]
         end_time = datetime.now()
-        print("[+] Finished!\n[+] During Time: %.2f" % ((end_time - start_time).seconds, ))
-        kwargs["info"]["log"].info("Module During Time: %.2f" % ((end_time - start_time).seconds, ))
+        gc.collect()
+        print("[+] Finished!\n[+] During Time: %.2f\n[+] Memory Usage: %.4f MB\n" \
+                % ((end_time - start_time).seconds, mem_usage))
+        kwargs["info"]["log"].info(
+                "[+] Finished!\n[+] During Time: %.2f\n[+] Memory Usage: %.4f MB\n" \
+                % ((end_time - start_time).seconds, mem_usage))
+        res["Duration"] = (end_time - start_time).seconds
+        res["MemUsage"] = mem_usage
         kwargs["info"]["log"].info("Module Results: " + str(res))
         print("[+] Module Results: " + str(res))
         return res
