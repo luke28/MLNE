@@ -18,9 +18,8 @@ def loop(params, info, pre_res, **kwargs):
             mdl_name = module["func"]
             mdl_params = module["params"]
             mdl = __import__("%s.%s" % (mdl_name, mdl_params["func"]), fromlist = [mdl_name])
-            getattr(mdl, mdl_name)(mdl_params,
+            res[mdl_name] = getattr(mdl, mdl_name)(mdl_params,
                 info = info,
                 pre_res = res,
-                mdl_name = mdl_name)
-    
+                mdl_name = mdl_name) 
     return res

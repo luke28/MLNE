@@ -3,6 +3,7 @@ import tensorflow as tf
 import math
 
 def initialize_embeddings(num_nodes, dim):
+    #embeddings = tf.Variable(tf.random_uniform([num_nodes, dim], -1.0 / num_nodes, 1.0 / num_nodes, dtype = tf.float32))
     embeddings = tf.Variable(tf.random_uniform([num_nodes, dim], -1.0, 1.0, dtype = tf.float32))
     with tf.Session() as sess:
         sess.run(tf.global_variables_initializer())

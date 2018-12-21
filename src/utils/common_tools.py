@@ -123,10 +123,14 @@ def module_decorator(func):
         kwargs["info"]["log"].info("Start Module %s" % (kwargs["mdl_name"], ))
         start_time = datetime.now()
         
-        mem_usage, res  = memory_usage((func, args, kwargs),
-                interval = .1,
-                max_usage = True,
-                retval = True)
+        print "OOOOOOOOOO"
+        #mem_usage, res  = memory_usage((func, args, kwargs),
+        #        interval = .1,
+        #        max_usage = True,
+        #        retval = True)
+        res = func(*args, **kwargs)
+        mem_usage = [0.0]
+        print "XXXXXXXXX"
         mem_usage = mem_usage[0]
         end_time = datetime.now()
         gc.collect()
@@ -139,6 +143,8 @@ def module_decorator(func):
         res["MemUsage"] = mem_usage
         kwargs["info"]["log"].info("Module Results: " + str(res))
         print("[+] Module Results: " + str(res))
+        kwargs["info"]["log"].info("[+] Module Results: " + str(res))
+        #raw_input()
         return res
     return wrapper
 
