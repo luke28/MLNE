@@ -47,9 +47,9 @@ def split_graph(params, info, pre_res, **kwargs):
         if u not in top_set:
             node_lst.append(u)
     random.shuffle(node_lst)
-    print node_lst
+    #print node_lst
     group = {u : idx / p.community_size for idx, u in enumerate(node_lst)}
-    print group
+    #print group
     tmp_files = [FileOutstream(os.path.join(p.tmp_path, "%d" % i)) for i in xrange(p.num_community)]
     for i in xrange(p.num_community):
         with io.open(os.path.join(p.data_path, "%d_info.pkl" % i), "rb") as f:
@@ -60,7 +60,7 @@ def split_graph(params, info, pre_res, **kwargs):
                 sub_params["map"][j],
                 sub_params["in_degree"][j],
                 sub_params["out_degree"][j]))
-            print s
+            #print s
             u = sub_params["map"][j]
             tmp_files[group[u]].writeline(s)
     del tmp_files
@@ -77,7 +77,8 @@ def split_graph(params, info, pre_res, **kwargs):
             edge_files[group[e[0]]].write("%d\t%d\n" % e)
         else:
             num_ignore += 1
-    print num_ignore
+    print "Number of ignored edges: " + str(num_ignore)
+    print "Number of edges: " + str(len(G.edges()))
     del edge_files
 
     for i in xrange(p.num_community):
@@ -103,7 +104,7 @@ def split_graph(params, info, pre_res, **kwargs):
                 "map": mapp,
                 "in_degree": inds,
                 "out_degree": outds}
-        print sub_params
+        #print sub_params
         with io.open(os.path.join(p.res_path, "%d_info.pkl" % i), "wb") as f:
             pickle.dump(sub_params, f)
     #res["data_path"] = p.res_path

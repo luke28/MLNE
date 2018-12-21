@@ -26,6 +26,7 @@ def init(params, info, **kwargs):
     p = ct.obj_dic(params)
 
     G = gh.load_unweighted_digraph(p.network_path, p.is_directed)
+    info["num_edges"] = len(G.edges())
     # top-k nodes
     q = pq()
     for idx, u in enumerate(G):
@@ -42,7 +43,7 @@ def init(params, info, **kwargs):
     while not q.empty():
         top_lst.append(q.get_nowait()[1])
         top_set.add(top_lst[-1])
-    print top_lst
+    print "top_lst: " + str(top_lst)
 
     node_lst = []
     for u in G:
@@ -99,5 +100,6 @@ def init(params, info, **kwargs):
     info["total_degree"] = G.graph["degree"]
     info["num_community"] = num_community
     res["data_path"] = p.res_path
-    print info
+    print "Info: ", info["q"], info["Z"]
+    #print "End!!"
     return res

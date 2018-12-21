@@ -12,6 +12,7 @@ from model import NodeEmbedding
 
 def params_handler(params, info, pre_res, **kwargs):
     params["num_nodes"] = info["num_nodes"]
+    params["num_edges"] = info["num_edges"]
     params["community_size"] = info["community_size"]
     params["num_community"] = info["num_community"]
     params["num_top"] = info["num_top"]
@@ -66,22 +67,22 @@ def optimize(params, info, pre_res, **kwargs):
                     batch_w[i] = u
                     batch_c_pos[i] = v
                     if u >= len(sub_params["map"]) and v >= len(sub_params["map"]):
-                        batch_pos_weight[i] = 1.0  / info["q"][2]
+                        batch_pos_weight[i] = info["Z"][0]  / info["q"][2]
                     elif u >= len(sub_params["map"]) or v >= len(sub_params["map"]):
-                        batch_pos_weight[i] = 1.0 / info["q"][1]
+                        batch_pos_weight[i] = info["Z"][0] / info["q"][1]
                     else:
-                        batch_pos_weight[i] = 1.0 / info["q"][0]
+                        batch_pos_weight[i] = info["Z"][0] / info["q"][0]
                     
                     # TODO use degree info
                     for j in xrange(p.num_sampled):
                         v = random.randint(0, len(rmapp) - 1)
                         batch_c_neg[i][j] = v
                         if u >= len(sub_params["map"]) and v >= len(sub_params["map"]):
-                            batch_neg_weight[i][j] = info["Z"][1] / info["q"][2] / info["Z"][0]
+                            batch_neg_weight[i][j] = info["Z"][1] / info["q"][2]
                         elif u >= len(sub_params["map"]) or v >= len(sub_params["map"]):
-                            batch_neg_weight[i][j] = info["Z"][1] / info["q"][1] / info["Z"][0]
+                            batch_neg_weight[i][j] = info["Z"][1] / info["q"][1]
                         else:
-                            batch_neg_weight[i][j] = info["Z"][1] / info["q"][0] / info["Z"][0]
+                            batch_neg_weight[i][j] = info["Z"][1] / info["q"][0]
                     now += 1
                 yield batch_w, batch_c_pos, batch_c_neg, batch_pos_weight, batch_neg_weight
             
