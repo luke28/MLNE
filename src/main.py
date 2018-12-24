@@ -30,6 +30,9 @@ def init(args, params, whole_params):
     info["log"] = ct.get_logger(log_path)
     ct.symlink(log_path, os.path.join(LOG_PATH, "new_log"))
     ct.symlink(info["res_home"], os.path.join(RES_PATH, "new_res"))
+
+    random.seed(info["random_seed"])
+    np.random.seed(info["np_seed"])
     return info
 
 def main():

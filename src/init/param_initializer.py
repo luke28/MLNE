@@ -1,6 +1,9 @@
 import numpy as np
 import tensorflow as tf
 import math
+import random
+
+tf.set_random_seed(random.randint(0, 1e9))
 
 def initialize_embeddings(num_nodes, dim):
     #embeddings = tf.Variable(tf.random_uniform([num_nodes, dim], -1.0 / num_nodes, 1.0 / num_nodes, dtype = tf.float32))

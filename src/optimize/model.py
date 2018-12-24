@@ -1,5 +1,6 @@
 import numpy as np
 import tensorflow as tf
+import random
 
 from utils import common_tools as ct
 
@@ -21,6 +22,7 @@ class NodeEmbedding(object):
 
         self.tensor_graph = tf.Graph()
         with self.tensor_graph.as_default():
+            tf.set_random_seed(random.randint(0, 1e9))
             self.w_id = tf.placeholder(tf.int32, shape = [None])
             self.c_pos_id = tf.placeholder(tf.int32, shape = [None])
             self.c_neg_id = tf.placeholder(tf.int32, shape = [None, self.k])
