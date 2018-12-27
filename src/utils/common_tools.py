@@ -124,12 +124,12 @@ def module_decorator(func):
         start_time = datetime.now()
         
         print "OOOOOOOOOO"
-        #mem_usage, res  = memory_usage((func, args, kwargs),
-        #        interval = .1,
-        #        max_usage = True,
-        #        retval = True)
-        res = func(*args, **kwargs)
-        mem_usage = [0.0]
+        mem_usage, res  = memory_usage((func, args, kwargs),
+                interval = .001,
+                max_usage = True,
+                retval = True)
+        #res = func(*args, **kwargs)
+        #mem_usage = [0.0]
         print "XXXXXXXXX"
         mem_usage = mem_usage[0]
         end_time = datetime.now()

@@ -41,6 +41,7 @@ def main():
     args = parser.parse_args()
     params = ct.load_json_file(os.path.join(CONF_PATH, args.conf + ".json"))
     info = init(args, params["static_info"], params)
+    os.environ['KMP_DUPLICATE_LIB_OK']='True'
 
     res = {}
     for module in params["run_modules"]:
