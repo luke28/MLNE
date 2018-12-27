@@ -2,7 +2,7 @@ import numpy as np
 import tensorflow as tf
 import math
 
-from utils.data_handler import DataHandler as dh
+from utils import graph_handler as gh
 class NodeEmbedding(object):
     def __init__(self, params, G):
         self.embedding_size = params["embedding_size"]
@@ -19,7 +19,7 @@ class NodeEmbedding(object):
 
         unigrams = None
         if "negative_sampling_distribution" in params:
-            unigrams = getattr(dh, params["negative_sampling_distribution"]["func"])(G, params["negative_sampling_distribution"])
+            unigrams = gh.out_degree_distribution(G)
 
         self.num_sampled = params["num_sampled"]
         self.epoch_num = params["epoch_num"]

@@ -37,7 +37,7 @@ def params_handler(params, info, pre_res, **kwargs):
 
 @ct.module_decorator
 def metric(params, info, pre_res, **kwargs):
-    print pre_res
+    
     res = params_handler(params, info, pre_res)
     p = ct.obj_dic(params)
     # load embeddings

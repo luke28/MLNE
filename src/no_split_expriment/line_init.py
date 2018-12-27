@@ -34,8 +34,6 @@ def no_split_expriment(params, info,**kwargs):
 
     embeddings, weights = ne.train()
   
-    print save_path
-    print "~~~~~~~~~~~~~~~~~"
     with io.open(save_path, "wb") as f:
         pickle.dump({"embeddings": embeddings.tolist(), "weights": weights.tolist()}, f)
     res = {}

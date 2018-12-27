@@ -25,7 +25,7 @@
                     "batch_strategy":{
                         "func": "weighted_edges_sampling"
                     },
-                    "func": "line",
+                    "func": "line_model",
                     "batch_size": 100,
                     "learn_rate": 0.003,
                     "embedding_size": 20,
