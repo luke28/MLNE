@@ -1,4 +1,5 @@
 #!/bin/bash
+# 批量运行一个文件夹下的所有conf，输入参数为conf文件夹路径或其中的一个子文件夹路径
 
 MAIN_PATH=$(cd `dirname $0`; pwd)
 echo $MAIN_PATH
