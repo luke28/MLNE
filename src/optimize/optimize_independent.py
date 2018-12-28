@@ -8,13 +8,15 @@ import json
 
 from utils import common_tools as ct
 from utils import graph_handler as gh
-from model import NodeEmbedding
 
 def params_handler(params, info, pre_res, **kwargs):
     params["num_nodes"] = info["num_nodes"]
     params["num_edges"] = info["num_edges"]
-    params["community_size"] = info["community_size"]
+    params["community_size_small"] = info["community_size_small"]
+    params["community_size_large"] = info["community_size_large"]
     params["num_community"] = info["num_community"]
+    params["num_community_small"] = info["num_community_small"]
+    params["num_community_large"] = info["num_community_large"]
     params["num_top"] = info["num_top"]
     params["res_path"] = info["res_home"]
     params["network_path"] = info["network_path"]
@@ -39,6 +41,7 @@ def optimize(params, info, pre_res, **kwargs):
         G = gh.load_unweighted_digraph(os.path.join(p.res_path, "%d_edges" % idx), True)
         with io.open(os.path.join(p.res_path, "%d_info.pkl" % idx), "rb") as f:
             sub_params = pickle.load(f)
+        #print sub_params
         rmapp = {v : k for k, v in sub_params["map"].items()}
         for k, v in topk_params["map"].items():
             rmapp[v] = k + len(sub_params["map"])
@@ -47,45 +50,16 @@ def optimize(params, info, pre_res, **kwargs):
         #print topk_params["embeddings"].shape, sub_params["embeddings"].shape
         #print np.concatenate((sub_params["embeddings"], topk_params["embeddings"]))
         params["size_subgraph"] = len(rmapp)
-        model = NodeEmbedding(params,
+        params["num_edges_subgraph"] = G.number_of_edges()
+        
+        model_handler = __import__("model." + p.model, fromlist = ["model"])
+        model = model_handler.NodeEmbedding(params,
                 np.concatenate((sub_params["embeddings"], topk_params["embeddings"])),
                 np.concatenate((sub_params["weights"], topk_params["weights"])))
-        def get_batch(maxx):
-            now = 0
-            edge_lst = [e for e in G.edges()]
-            for _ in xrange(maxx):
-                batch_w = np.zeros(p.batch_size, dtype = np.int32)
-                batch_c_pos = np.zeros(p.batch_size, dtype = np.int32)
-                batch_c_neg = np.zeros((p.batch_size, p.num_sampled), dtype = np.int32)
-                batch_pos_weight = np.zeros(p.batch_size, dtype = np.float32)
-                batch_neg_weight = np.zeros((p.batch_size, p.num_sampled), dtype = np.float32)
-                for i in xrange(p.batch_size):
-                    if now >= len(edge_lst):
-                        now = 0
-                    u = rmapp[edge_lst[now][0]]
-                    v = rmapp[edge_lst[now][1]]
-                    batch_w[i] = u
-                    batch_c_pos[i] = v
-                    if u >= len(sub_params["map"]) and v >= len(sub_params["map"]):
-                        batch_pos_weight[i] = info["Z"][0]  / info["q"][2]
-                    elif u >= len(sub_params["map"]) or v >= len(sub_params["map"]):
-                        batch_pos_weight[i] = info["Z"][0] / info["q"][1]
-                    else:
-                        batch_pos_weight[i] = info["Z"][0] / info["q"][0]
-                    
-                    # TODO use degree info
-                    for j in xrange(p.num_sampled):
-                        v = random.randint(0, len(rmapp) - 1)
-                        batch_c_neg[i][j] = v
-                        if u >= len(sub_params["map"]) and v >= len(sub_params["map"]):
-                            batch_neg_weight[i][j] = info["Z"][1] / info["q"][2]
-                        elif u >= len(sub_params["map"]) or v >= len(sub_params["map"]):
-                            batch_neg_weight[i][j] = info["Z"][1] / info["q"][1]
-                        else:
-                            batch_neg_weight[i][j] = info["Z"][1] / info["q"][0]
-                    now += 1
-                yield batch_w, batch_c_pos, batch_c_neg, batch_pos_weight, batch_neg_weight
-            
+        
+        bs = __import__("batch_strategy." + p.batch_strategy, fromlist = ["batch_strategy"])
+        get_batch = bs.batch_strategy(G, sub_params, topk_params, rmapp, p, info)
+
         embeddings, weights = model.train(get_batch)
         topk_params["embeddings"] = embeddings[len(rmapp) - p.num_top :]
         sub_params["embeddings"] = embeddings[: len(rmapp) - p.num_top]

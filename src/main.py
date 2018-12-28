@@ -23,6 +23,7 @@ def init(args, params, whole_params):
     info["data_path"] = DATA_PATH
     info["home_path"] = ROOT_PATH
     info["network_path"] = os.path.join(DATA_PATH, params["network_path"])
+    ct.check_attr(info, "mem_interval", 0.001)
     # if not exists, then mkdir
     ct.mkdir(info["res_home"])
 

@@ -10,7 +10,7 @@ import param_initializer as pi
 
 def params_handler(params, info, **kwargs):
     params["num_nodes"] = info["num_nodes"]
-    params["community_size"] = info["community_size"]
+    params["community_bound"] = info["community_bound"]
     params["num_top"] = info["num_top"]
     params["res_path"] = info["res_home"]
     params["network_path"] = info["network_path"]
@@ -50,10 +50,16 @@ def init(params, info, **kwargs):
         if u not in top_set:
             node_lst.append(u)
     
+    
     remain_size = len(node_lst)
-    num_community = remain_size // p.community_size
-    if remain_size % p.community_size != 0:
-        num_community += 1
+    num_community = (remain_size + p.community_bound - 1) // p.community_bound
+    num_community_large = remain_size % num_community
+    num_community_small = num_community - num_community_large
+    community_size_small = remain_size // num_community
+    community_size_large = community_size_small + 1
+
+    #print remain_size, num_community, num_community_small, num_community_large, community_size_small, community_size_large
+
     topk_params = {"embeddings" : pi.initialize_embeddings(p.num_top, p.dim),
             "weights" : pi.initialize_weights(p.num_top, p.dim),
             "in_degree": [G.node[i]["in_degree"] for i in top_lst],
@@ -73,22 +79,38 @@ def init(params, info, **kwargs):
         with io.open(os.path.join(p.res_path, "%d_info.pkl" % idx), "wb") as f:
             pickle.dump(sub_params, f)
 
-    for i in xrange(num_community):
-        deal_subgraph(i, i * p.community_size, min((i + 1) * p.community_size, remain_size))
+    for i in xrange(num_community_small):
+        deal_subgraph(i, i * community_size_small, (i + 1) * community_size_small)
+    
+    tmp = num_community_small * community_size_small
+    for i in xrange(num_community_small, num_community):
+        deal_subgraph(i,
+                tmp + (i - num_community_small) * community_size_large,
+                tmp + (i - num_community_small + 1) * community_size_large)
+    
+    info["num_community"] = num_community
+    info["num_community_small"] = num_community_small
+    info["num_community_large"] = num_community_large
+    info["community_size_small"] = community_size_small
+    info["community_size_large"] = community_size_large
+
+    #print info
 
     # calculate prob
     def cal_q1():
         K = float(num_community)
-        na = float(p.community_size)
-        n = p.num_nodes - p.num_top
-        nr = float(n % p.community_size)
-        n = float(n)
-        return (K - 1) * na / n * (na - 1) / (n - 1) + nr * (nr - 1) / n / (n - 1)
+        nl = float(community_size_small)
+        nr = nl + 1
+        n = float(p.num_nodes - p.num_top)
+        nh = float(community_size_large)
+        Kl = float(num_community_small)
+        Kh = float(num_community_large)
+        return Kl * nl / n * (nl - 1) / (n - 1) + Kh * nh / n * (nh - 1) / (n - 1)
 
     info["q"] = [cal_q1(), 1.0, float(num_community)]
     tmp = p.num_nodes - p.num_top
     info["Z"] = [0.0, info["q"][0] * tmp * tmp + \
-            tmp * p.num_top + info["q"][2] * p.num_top * p.num_top]
+            2.0 * tmp * p.num_top + info["q"][2] * p.num_top * p.num_top]
     for e in G.edges():
         if e[0] in top_set and e[1] in top_set:
             info["Z"][0] += info["q"][2]
