@@ -5,8 +5,9 @@ cd src
 python main --conf dolphins
 ```
 - The param in the command is the configure file path in the 'conf' dir.
-- We have implemented 4 versions for our model and the different version is corresponding to different suffix of the configure file name.
+- We have implemented 5 versions for our model and the different version is corresponding to different suffix of the configure file name.
 - The corresponding relations are shown in the following table:
+
 | Suffix of the conf | Descriptions|
 | ----- | ----- |
 | None | The first version with some mistakes|
