@@ -80,27 +80,20 @@ def split_graph(params, info, pre_res, **kwargs):
 
     num_ignore = 0
     edge_files = [FileOutstream(os.path.join(p.res_path, "%d_edges" % i)) for i in xrange(p.num_community)]
-    remain_edges = 0
-    topk_edges = 0
+    topk_edge_file = FileOutstream(os.path.join(p.res_path, "topk_edges"))
     for e in G.edges():
         if e[0] in top_set and e[1] in top_set:
-            for idx, f in enumerate(edge_files):
-                edge_files[idx].write("%d\t%d\n" % e)
-                remain_edges += 1
-                topk_edges += 1
+            topk_edge_file.write("%d\t%d\n" % e)
         elif e[0] in top_set:
             edge_files[group[e[1]]].write("%d\t%d\n" % e)
-            remain_edges += 1
         elif e[1] in top_set or group[e[0]] == group[e[1]]:
             edge_files[group[e[0]]].write("%d\t%d\n" % e)
-            remain_edges += 1
         else:
             num_ignore += 1
     print "Number of ignored edges: " + str(num_ignore)
-    print "Number of remain edges: " + str(remain_edges)
-    print "Number of topk edges: " + str(topk_edges)
     print "Number of edges: " + str(len(G.edges()))
     del edge_files
+    del topk_edge_file
     gc.collect()
 
     for i in xrange(p.num_community):

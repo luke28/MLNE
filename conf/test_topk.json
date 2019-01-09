@@ -1,0 +1,58 @@
+{
+    "static_info" : {
+        "random_seed": 157,
+        "np_seed": 213,
+        "network_path": "test_nw.dat",
+        "num_nodes": 10,
+        "community_bound": 3,
+        "num_top": 3,
+        "embedding_size": 3
+
+    },
+    "run_modules":[
+        {
+            "func": "init",
+            "params": {
+                "func": "simple_init",
+                "is_directed": false,
+                "q2": 1.0
+            }
+        },
+        {
+            "func": "loop",
+            "params":{
+                "func": "simple_loop",
+                "times": 2,
+                "loop_modules":[
+                    {
+                        "func": "split_graph",
+                        "params":{
+                            "func": "simple_split_topk"
+                        }
+                    },
+                    {
+                        "func": "optimize",
+                        "params": {
+                            "func": "optimize_topk_independent",
+                            "batch_strategy": "loop_edges_independent_topk",
+                            "topk_batch_strategy": "loop_edges_topk",
+                            "model": "independent_model",
+                            "learn_rate": 0.01,
+                            "num_sampled": 2,
+                            "optimizer": "AdamOptimizer",
+                            "epoch_num": 300,
+                            "show_num": 50,
+                            "batch_size": 2
+                        }
+                    }
+                ]
+            }
+        },
+        {
+           "func": "merge_embedding",
+           "params":{
+               "func": "simple_merge"
+           }
+        }
+    ]
+}

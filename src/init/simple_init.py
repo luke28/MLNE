@@ -16,6 +16,7 @@ def params_handler(params, info, **kwargs):
     params["network_path"] = info["network_path"]
     params["dim"] = info["embedding_size"]
 
+    ct.check_attr(params, "q2", None)
     ct.check_attr(params, "is_directed", False)
 
     return {}
@@ -107,17 +108,19 @@ def init(params, info, **kwargs):
         Kh = float(num_community_large)
         return Kl * nl / n * (nl - 1) / (n - 1) + Kh * nh / n * (nh - 1) / (n - 1)
 
-    info["q"] = [cal_q1(), 1.0, float(num_community)]
+    info["q"] = [cal_q1(), 1.0, float(num_community) if p.q2 is None else p.q2]
     tmp = p.num_nodes - p.num_top
     info["Z"] = [0.0, info["q"][0] * tmp * tmp + \
             2.0 * tmp * p.num_top + info["q"][2] * p.num_top * p.num_top]
+    info["num_topk_edges"] = 0
     for e in G.edges():
         if e[0] in top_set and e[1] in top_set:
             info["Z"][0] += info["q"][2]
+            info["num_topk_edges"] += 1
         elif e[0] in top_set or e[1] in top_set:
             info["Z"][0] += 1
         else:
-            info["Z"][0] += info["q"][0]
+             info["Z"][0] += info["q"][0]
 
     info["total_degree"] = G.graph["degree"]
     info["num_community"] = num_community

@@ -12,7 +12,7 @@ from utils import graph_handler as gh
 def params_handler(params, info, pre_res, **kwargs):
     params["num_nodes"] = info["num_nodes"]
     params["num_edges"] = info["num_edges"]
-    params["num_remain_edges"] = info["num_edges"] - pre_res["split_graph"]["num_ignore"] + (info["num_community"] - 1) * info["num_topk_edges"]
+    params["num_remain_edges"] = info["num_edges"] - pre_res["split_graph"]["num_ignore"]
     params["community_size_small"] = info["community_size_small"]
     params["community_size_large"] = info["community_size_large"]
     params["num_community"] = info["num_community"]
@@ -36,7 +36,20 @@ def optimize(params, info, pre_res, **kwargs):
         topk_params = pickle.load(f)
     top_set = set(v for k, v in topk_params["map"].items())
 
-    tmp_num = [0]
+    print("[+] Start deal with the top-k subgraph")
+    p.log.info("[+] Start deal with the top-k subgraph")
+    G = gh.load_unweighted_digraph(os.path.join(p.res_path, "topk_edges"), True)
+    rmapp = {v : k for k, v in topk_params["map"].items()}
+    params["size_subgraph"] = len(rmapp)
+    params["num_edges_subgraph"] = G.number_of_edges()
+    model_handler = __import__("model." + p.model, fromlist = ["model"])
+    model = model_handler.NodeEmbedding(params, topk_params["embeddings"], topk_params["weights"])
+    bs = __import__("batch_strategy." + p.topk_batch_strategy,fromlist = ["batch_strategy"] )
+    get_batch = bs.batch_strategy(G, topk_params, rmapp, p, info)
+    embeddings, weights = model.train(get_batch)
+    topk_params["embeddings"] = embeddings
+    topk_params["weights"] = weights
+
     def deal_subgraph(idx):
         print("[+] Start deal with the %d-th subgraph" % (idx + 1))
         p.log.info("[+] Start deal with the %d-th subgraph" % (idx + 1))
@@ -53,8 +66,7 @@ def optimize(params, info, pre_res, **kwargs):
         #print np.concatenate((sub_params["embeddings"], topk_params["embeddings"]))
         params["size_subgraph"] = len(rmapp)
         params["num_edges_subgraph"] = G.number_of_edges()
-        tmp_num[0] += params["num_edges_subgraph"]
-
+        
         model_handler = __import__("model." + p.model, fromlist = ["model"])
         model = model_handler.NodeEmbedding(params,
                 np.concatenate((sub_params["embeddings"], topk_params["embeddings"])),
@@ -73,7 +85,6 @@ def optimize(params, info, pre_res, **kwargs):
     
     for i in xrange(p.num_community):
         deal_subgraph(i)
-    print "real: " + str(tmp_num[0]) + ", estimate: " + str(params["num_remain_edges"])
     with io.open(os.path.join(p.res_path, "%topk_info.pkl"), "wb") as f:
         pickle.dump(topk_params, f)
     return res

@@ -21,7 +21,7 @@
             "func": "loop",
             "params":{
                 "func": "simple_loop",
-                "times": 5,
+                "times": 40,
                 "loop_modules":[
                     {
                         "func": "split_graph",
@@ -33,14 +33,14 @@
                         "func": "optimize",
                         "params": {
                             "func": "optimize_independent",
-                            "model": "joint_model",
-                            "batch_strategy": "loop_edges",
-                            "learn_rate": 0.01,
+                            "learn_rate": 0.03,
                             "num_sampled": 4,
                             "optimizer": "AdamOptimizer",
                             "epoch_num": 1000,
                             "show_num": 300,
-                            "batch_size": 100
+                            "batch_size": 100,
+                            "batch_strategy": "whole_sampling",
+                            "model": "independent_model_unweighted"
                         }
                     }
                 ]

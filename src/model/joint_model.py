@@ -50,8 +50,8 @@ class NodeEmbedding(object):
             self.neg_dot = tf.squeeze(self.neg_dot_pre)
             #self.loss = -tf.reduce_sum(tf.log_sigmoid(self.pos_dot)) - \
             #        tf.reduce_sum(tf.log_sigmoid(-self.neg_dot))
-            self.loss = -tf.reduce_sum(tf.multiply(tf.log_sigmoid(self.pos_dot), self.pos_weight)) / self.num_edges - \
-                    tf.reduce_sum(tf.multiply(tf.log_sigmoid(-self.neg_dot), self.neg_weight)) / self.num_nodes / self.num_nodes
+            self.loss = -tf.reduce_mean(tf.multiply(tf.log_sigmoid(self.pos_dot), self.pos_weight)) / self.num_edges - \
+                    tf.reduce_mean(tf.multiply(tf.log_sigmoid(-self.neg_dot), self.neg_weight)) / self.num_nodes / self.num_nodes
             self.train_step =  getattr(tf.train, self.optimizer)(self.lr).minimize(self.loss)
 
 

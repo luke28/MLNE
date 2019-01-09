@@ -33,14 +33,14 @@
                         "func": "optimize",
                         "params": {
                             "func": "optimize_independent",
-                            "model": "joint_model",
-                            "batch_strategy": "loop_edges",
                             "learn_rate": 0.01,
                             "num_sampled": 4,
                             "optimizer": "AdamOptimizer",
-                            "epoch_num": 1000,
+                            "epoch_num": 2000,
                             "show_num": 300,
-                            "batch_size": 100
+                            "batch_size": 100,
+                            "batch_strategy": "loop_edges_independent",
+                            "model": "independent_model"
                         }
                     }
                 ]

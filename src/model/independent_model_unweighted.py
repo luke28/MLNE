@@ -31,8 +31,6 @@ class NodeEmbedding(object):
             self.w_neg_id = tf.placeholder(tf.int32, shape = [None])
             self.c_pos_id = tf.placeholder(tf.int32, shape = [None])
             self.c_neg_id = tf.placeholder(tf.int32, shape = [None])
-            self.neg_weight = tf.placeholder(tf.float32, shape = [None])
-            self.pos_weight = tf.placeholder(tf.float32, shape = [None])
 
             if w is None:
                 self.w = tf.Variable(tf.random_uniform([self.size_subgraph, self.dim], -1.0 / self.size_subgraph, 1.0 / self.size_subgraph), dtype = tf.float32)
@@ -52,7 +50,7 @@ class NodeEmbedding(object):
             self.neg_dot = tf.reduce_sum(tf.multiply(self.embed_neg, self.c_neg), axis = 1)
             
             
-            self.loss = -tf.reduce_mean(tf.multiply(tf.log_sigmoid(self.pos_dot), self.pos_weight)) - tf.reduce_mean(tf.multiply(tf.log_sigmoid(-self.neg_dot), self.neg_weight))
+            self.loss = -tf.reduce_mean(tf.log_sigmoid(self.pos_dot)) - float(self.size_subgraph ** 2) / float(self.num_edges_subgraph) * tf.reduce_mean(tf.log_sigmoid(-self.neg_dot))
             self.train_step =  getattr(tf.train, self.optimizer)(self.lr).minimize(self.loss)
 
 
@@ -68,9 +66,7 @@ class NodeEmbedding(object):
                 input_dic = {self.w_pos_id: batch[0],
                     self.w_neg_id: batch[1],
                     self.c_pos_id: batch[2],
-                    self.c_neg_id: batch[3],
-                    self.pos_weight: batch[4],
-                    self.neg_weight: batch[5]}
+                    self.c_neg_id: batch[3]}
                 self.train_step.run(input_dic)
                 loss += self.loss.eval(input_dic)
                 if (i + 1) % self.show_num == 0:
