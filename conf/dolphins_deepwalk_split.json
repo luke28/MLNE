@@ -1,0 +1,81 @@
+{
+    "static_info" : {
+        "random_seed": 157,
+        "np_seed": 213,
+        "network_path": "dolphins_nw.dat",
+        "num_nodes": 62,
+        "num_top":0,
+        "community_size": 31,
+        "embedding_size": 10
+
+    },
+    "run_modules":[
+        {
+            "func": "init",
+            "params": {
+                "func": "simple_init_contrast",
+                "is_directed": false
+            }
+        },
+        {
+            "func": "loop",
+            "params":{
+                "func": "simple_loop",
+                "times": 2,
+                "loop_modules":[
+                    {
+                        "func": "split_graph",
+                        "params":{
+                            "func": "simple_split_contrast"
+                        }
+                    },
+                    {
+                        "func": "split_expriment",
+                        "params": {
+                            "func": "simple_split_deepwalk",
+                            "load_data": {
+                            "func": "load_unweighted_digraph",
+                            "is_directed": false,
+                            "network_file": "dolphins_nw"
+                            },
+                            "init_train":{
+                                "batch_size": 100,
+                                "learn_rate": 0.003,
+                                "embedding_size": 10,
+                                "vertex_freq_degree":false,
+                                "neighbor_size": 1,
+                                "num_walks":10,
+                                "walk_len":80,
+                                "num_sampled":4,
+                                "max_memdata_size":1000000000,
+                                "seed":0,
+                                "window_size":10,
+                                "parallel_workers":1,
+                                "epoch_num": 10000
+                            }
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "func": "merge_embedding",
+            "params":{
+                "func": "merge_no_top_weight"
+            }
+        },
+        {
+            "func": "metric",
+            "params":{
+                "func": "node_classification",
+                "model":{
+                    "func": "logistic",
+                    "n_jobs": 2
+                },
+                "ground_truth": "dolphins_flag.dat",
+                "test_size": 0.3,
+                "times": 10
+            }
+        }
+    ]
+}

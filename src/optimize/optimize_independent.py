@@ -91,6 +91,8 @@ def optimize(params, info, pre_res, **kwargs):
         sub_params["embeddings"] = embeddings[: len(rmapp) - p.num_top]
         topk_params["weights"] = weights[len(rmapp) - p.num_top :]
         sub_params["weights"] = weights[: len(rmapp) - p.num_top]
+        print "~~~~~~~~~~"
+        print sub_params["embeddings"]
         with io.open(os.path.join(p.res_path, "%d_info.pkl" % idx), "wb") as f:
             pickle.dump(sub_params, f)
     

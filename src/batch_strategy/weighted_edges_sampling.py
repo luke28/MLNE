@@ -10,10 +10,11 @@ from alias_table_sampling import AliasTable as at
 class BatchStrategy(object):
     # G is a DiGraph with edge weights
     def __init__(self, G, params = None):
-        self.edges = G.edges()
+        self.edges = []
         probs = []
         for it in G.edges():
             probs.append(G[it[0]][it[1]]['weight'])
+            self.edges.append(it)
         self.sampling_handler = at(probs)
 
     def get_batch(self, batch_size):

@@ -28,6 +28,8 @@ def classification(X, params):
 def params_handler(params, info, pre_res, **kwargs):
     if "embedding_path" in params:
         os.path.join(info["home_path"], params["embedding_path"])
+    elif "no_split_expriment" in pre_res:
+        params["embedding_path"] = pre_res["no_split_expriment"]["embedding_path"]
     else:
         params["embedding_path"] = pre_res["merge_embedding"]["embedding_path"]
     params["ground_truth"] = os.path.join(info["data_path"], params["ground_truth"])
@@ -35,12 +37,14 @@ def params_handler(params, info, pre_res, **kwargs):
 
 @ct.module_decorator
 def metric(params, info, pre_res, **kwargs):
+    print "~~~~~~~~~~~~"
+    print pre_res
     res = params_handler(params, info, pre_res)
     p = ct.obj_dic(params)
     # load embeddings
+
     with io.open(p.embedding_path, "rb") as f:
         X = pickle.load(f)["embeddings"]
-
     res["acc"] = classification(X, params)
     return res
 

@@ -30,3 +30,15 @@ def load_unweighted_digraph(network_path, is_directed, **kwargs):
                 dict_add(G.node[int(items[0])], 'in_degree', 1)
                 G.graph['degree'] += 1
     return G
+
+def out_degree_distribution(G, params = None):
+    ret = [0] * G.number_of_nodes()
+    for u in G:
+        ret[u] = G.node[u]['out_degree']
+    return ret
+
+def in_degree_distribution(G, params = None):
+    ret = [0] * G.number_of_nodes()
+    for u in G:
+        ret[u] = G.node[u]['in_degree']
+    return ret

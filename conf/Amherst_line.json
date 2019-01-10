@@ -1,0 +1,56 @@
+{
+    "static_info" : {
+        "random_seed": 157,
+        "np_seed": 213,
+        "network_path": "amherst_nw.dat",
+        "num_nodes": 2235,
+        "community_size": 2235,
+        "num_top": 100,
+        "embedding_size": 20
+    },
+    "run_modules":[
+        {
+            "func": "no_split_expriment",
+            "params": {
+                "func": "line_init",
+                "load_data": {
+                "func": "load_unweighted_digraph",
+                "is_directed": false,
+                "network_file": "amherst_nw"
+                },
+                "init_train":{
+                    "negative_sampling_distribution":{
+                        "func": "out_degree_distribution"
+                    },
+                    "batch_strategy":{
+                        "func": "weighted_edges_sampling"
+                    },
+                    "func": "line_model",
+                    "batch_size": 100,
+                    "learn_rate": 0.003,
+                    "embedding_size": 20,
+                    "loss_func": "cross_entropy",
+                    "optimizer": "AdamOptimizer",
+                    "neighbor_size": 1,
+                    "num_sampled": 4,
+                    "negative_distortion": 1.0,
+                    "epoch_num": 30000
+                }
+            }
+            
+        },
+        {
+            "func": "metric",
+            "params":{
+                "func": "node_classification",
+                "model":{
+                    "func": "logistic",
+                    "n_jobs": 2
+                },
+                "ground_truth": "amherst_flag.dat",
+                "test_size": 0.3,
+                "times": 4
+            }
+        }
+    ]
+}
