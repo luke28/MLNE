@@ -5,6 +5,7 @@ import pickle
 from Queue import PriorityQueue as pq
 import random
 import json
+import gc
 
 from utils import common_tools as ct
 from utils import graph_handler as gh
@@ -12,8 +13,11 @@ from file_outstream import FileOutstream
 
 def params_handler(params, info, pre_res, **kwargs):
     params["num_nodes"] = info["num_nodes"]
-    params["community_size"] = info["community_size"]
+    params["community_size_small"] = info["community_size_small"]
+    params["community_size_large"] = info["community_size_large"]
     params["num_community"] = info["num_community"]
+    params["num_community_small"] = info["num_community_small"]
+    params["num_community_large"] = info["num_community_large"]
     params["num_top"] = info["num_top"]
     params["res_path"] = info["res_home"]
     params["network_path"] = info["network_path"]
@@ -48,7 +52,15 @@ def split_graph(params, info, pre_res, **kwargs):
             node_lst.append(u)
     random.shuffle(node_lst)
     #print node_lst
-    group = {u : idx / p.community_size for idx, u in enumerate(node_lst)}
+    #group = {u : idx / p.community_size for idx, u in enumerate(node_lst)}
+    tmp = p.community_size_small * p.num_community_small
+    group = {}
+    for idx, u in enumerate(node_lst):
+        if idx < tmp:
+            group[u] = idx // p.community_size_small
+        else:
+            group[u] = p.num_community_small +  (idx - tmp) // p.community_size_large
+
     #print group
     tmp_files = [FileOutstream(os.path.join(p.tmp_path, "%d" % i)) for i in xrange(p.num_community)]
     for i in xrange(p.num_community):
@@ -64,22 +76,32 @@ def split_graph(params, info, pre_res, **kwargs):
             u = sub_params["map"][j]
             tmp_files[group[u]].writeline(s)
     del tmp_files
+    gc.collect()
 
     num_ignore = 0
     edge_files = [FileOutstream(os.path.join(p.res_path, "%d_edges" % i)) for i in xrange(p.num_community)]
+    remain_edges = 0
+    topk_edges = 0
     for e in G.edges():
         if e[0] in top_set and e[1] in top_set:
             for idx, f in enumerate(edge_files):
                 edge_files[idx].write("%d\t%d\n" % e)
+                remain_edges += 1
+                topk_edges += 1
         elif e[0] in top_set:
             edge_files[group[e[1]]].write("%d\t%d\n" % e)
+            remain_edges += 1
         elif e[1] in top_set or group[e[0]] == group[e[1]]:
             edge_files[group[e[0]]].write("%d\t%d\n" % e)
+            remain_edges += 1
         else:
             num_ignore += 1
     print "Number of ignored edges: " + str(num_ignore)
+    print "Number of remain edges: " + str(remain_edges)
+    print "Number of topk edges: " + str(topk_edges)
     print "Number of edges: " + str(len(G.edges()))
     del edge_files
+    gc.collect()
 
     for i in xrange(p.num_community):
         embeddings = []
@@ -107,5 +129,7 @@ def split_graph(params, info, pre_res, **kwargs):
         #print sub_params
         with io.open(os.path.join(p.res_path, "%d_info.pkl" % i), "wb") as f:
             pickle.dump(sub_params, f)
+            #print sub_params
     #res["data_path"] = p.res_path
+    res["num_ignore"] = num_ignore
     return res

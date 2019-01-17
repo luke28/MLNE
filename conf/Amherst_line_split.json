@@ -4,16 +4,30 @@
         "np_seed": 213,
         "network_path": "amherst_nw.dat",
         "num_nodes": 2235,
-        "community_size": 2235,
+        "num_top":0,
+        "community_size": 1000,
         "embedding_size": 20
     },
     "run_modules":[
         {
+            "func": "init",
+            "params": {
+                "func": "simple_init_line",
+                "is_directed": false
+            }
+        },
+        {
             "func":"loop",
             "params":{
                 "func": "simple_loop",
-                "times": 1,
+                "times": 2,
                 "loop_modules":[
+                    {
+                        "func": "split_graph",
+                        "params":{
+                            "func": "split_line_notop"
+                        }
+                    },
                     {
                         "func": "split_expriment",
                         "params": {
@@ -39,7 +53,7 @@
                                 "neighbor_size": 1,
                                 "num_sampled": 4,
                                 "negative_distortion": 1.0,
-                                "epoch_num": 1000
+                                "epoch_num": 30000
                             }
                         }
                     }
@@ -50,7 +64,7 @@
         {
            "func": "merge_embedding",
            "params":{
-               "func": "merge_no_top"
+               "func": "merge_no_top_weight"
            }
         },
         {

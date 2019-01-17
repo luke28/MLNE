@@ -123,14 +123,14 @@ def module_decorator(func):
         kwargs["info"]["log"].info("Start Module %s" % (kwargs["mdl_name"], ))
         start_time = datetime.now()
         
-        print "OOOOOOOOOO"
+        #print "OOOOOOOOOO"
         mem_usage, res  = memory_usage((func, args, kwargs),
-                interval = .001,
+                interval = kwargs["info"]["mem_interval"],
                 max_usage = True,
                 retval = True)
         #res = func(*args, **kwargs)
         #mem_usage = [0.0]
-        print "XXXXXXXXX"
+        #print "XXXXXXXXX"
         mem_usage = mem_usage[0]
         end_time = datetime.now()
         gc.collect()
@@ -173,4 +173,3 @@ def load_onehot_ground_truth(file_path):
             lst.append([int(i) for i in items])
     lst.sort()
     return np.array([i[1:] for i in lst], dtype=int)
-

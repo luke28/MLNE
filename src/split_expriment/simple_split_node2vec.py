@@ -54,7 +54,7 @@ def split_expriment(params, info, pre_res, **kwargs):
 
     if p.num_nodes % p.community_size != 0:
         num_community += 1
-
+    p.num_community = num_community
    
     def deal_subgraph(idx_gragh, st, ed):
         with io.open(os.path.join(p.data_path, "%d_info.pkl" % idx_gragh), "rb") as f:
@@ -64,13 +64,9 @@ def split_expriment(params, info, pre_res, **kwargs):
     
         rmapp = {v : k for k, v in sub_params["map"].items()}
         tmp_G = nx.DiGraph()
-        #rmapp = {node_lst[st+j]:j for j in xrange(ed-st)}
-        #print rmapp
         rmapp_new = {v : k for k, v in rmapp.items()}
         for v,k in rmapp.items():
             tmp_G.add_node(k)
-            dict_add(tmp_G.node[k], 'out_degree', 0)
-            dict_add(tmp_G.node[k], 'in_degree', 0)
 
         all_edges_num = 0
         tmp_edges_num = 0
@@ -79,11 +75,7 @@ def split_expriment(params, info, pre_res, **kwargs):
             if rmapp.has_key(edge_tmp[0]) and rmapp.has_key(edge_tmp[1]):
                 tmp_edges_num += 1
                 tmp_G.add_edge(rmapp[edge_tmp[0]],rmapp[edge_tmp[1]],weight=1)
-                dict_add(tmp_G.node[rmapp[edge_tmp[0]]], 'out_degree', 1)
-                dict_add(tmp_G.node[rmapp[edge_tmp[1]]], 'in_degree', 1)
-                dict_add(tmp_G.graph, 'degree', 1)
-                
-
+        
      
         module_embedding = __import__(
                 "split_expriment." + params["init_train"]["func"], fromlist = ["split_expriment"]).NodeEmbedding
@@ -99,12 +91,10 @@ def split_expriment(params, info, pre_res, **kwargs):
        
      
         sub_params = {"embeddings": embeddings,
-                "map" : rmapp_new}
+                "map" : sub_params["map"]}
   
         with io.open(os.path.join(info["res_home"], "%d_info.pkl" % idx_gragh), "wb") as f:
             pickle.dump(sub_params, f)
-
-
 
     res = {}
     res["embedding_path"] = info["res_home"]

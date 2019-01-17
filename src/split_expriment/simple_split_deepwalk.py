@@ -47,13 +47,12 @@ def split_expriment(params, info, pre_res, **kwargs):
     for u in G:
         node_lst.append(u)
 
-    random.shuffle(node_lst)
     num_community = p.num_nodes // p.community_size
 
     if p.num_nodes % p.community_size != 0:
         num_community += 1
 
-   
+    p.num_community = num_community
     def deal_subgraph(idx_gragh, st, ed):
         with io.open(os.path.join(p.data_path, "%d_info.pkl" % idx_gragh), "rb") as f:
             sub_params = pickle.load(f)
@@ -67,13 +66,8 @@ def split_expriment(params, info, pre_res, **kwargs):
         for v,k in rmapp.items():
             tmp_G.add_node(k)
 
-
-        all_edges_num = 0
-        tmp_edges_num = 0
         for edge_tmp in G.edges():
-            all_edges_num += 1
             if rmapp.has_key(edge_tmp[0]) and rmapp.has_key(edge_tmp[1]):
-                tmp_edges_num += 1
                 tmp_G[rmapp[edge_tmp[0]]].append(rmapp[edge_tmp[1]])
 
         tmp_G.make_consistent()
@@ -122,7 +116,7 @@ def split_expriment(params, info, pre_res, **kwargs):
                     embeddings.append(np.zeros((1, p.dim), dtype = np.float32))
      	
         sub_params = {"embeddings": embeddings,
-                "map" : rmapp_new}
+                "map" : sub_params["map"]}
   
         with io.open(os.path.join(info["res_home"], "%d_info.pkl" % idx_gragh), "wb") as f:
             pickle.dump(sub_params, f)

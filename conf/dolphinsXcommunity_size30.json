@@ -4,8 +4,8 @@
         "np_seed": 213,
         "network_path": "dolphins_nw.dat",
         "num_nodes": 62,
-        "community_size": 30,
-        "num_top": 10,
+        "community_bound": 30,
+        "num_top": 20,
         "embedding_size": 10
 
     },
@@ -21,7 +21,7 @@
             "func": "loop",
             "params":{
                 "func": "simple_loop",
-                "times": 30,
+                "times": 5,
                 "loop_modules":[
                     {
                         "func": "split_graph",

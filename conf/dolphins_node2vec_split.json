@@ -5,7 +5,7 @@
         "network_path": "dolphins_nw.dat",
         "num_nodes": 62,
         "num_top":0,
-        "community_size": 62,
+        "community_size": 31,
         "embedding_size": 10
 
     },
@@ -59,7 +59,7 @@
                                 "num_sampled":4,
                                 "parallel_workers":8,
                                 "negative_distortion": 1.0,
-                                "epoch_num": 10000
+                                "epoch_num": 30000
                             }
                         }
                     }

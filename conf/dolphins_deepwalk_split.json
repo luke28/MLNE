@@ -51,7 +51,7 @@
                                 "seed":0,
                                 "window_size":10,
                                 "parallel_workers":1,
-                                "epoch_num": 10000
+                                "epoch_num": 30000
                             }
                         }
                     }

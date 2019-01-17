@@ -13,7 +13,7 @@
          {
             "func": "init",
             "params": {
-                "func": "simple_init_contrast",
+                "func": "simple_init_line",
                 "is_directed": false
             }
         },
@@ -26,7 +26,7 @@
                     {
                         "func": "split_graph",
                         "params":{
-                            "func": "simple_split_contrast"
+                            "func": "split_line_notop"
                         }
                     },
                     {

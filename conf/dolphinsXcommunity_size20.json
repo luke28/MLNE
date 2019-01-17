@@ -4,7 +4,7 @@
         "np_seed": 213,
         "network_path": "dolphins_nw.dat",
         "num_nodes": 62,
-        "community_size": 20,
+        "community_bound": 20,
         "num_top": 5,
         "embedding_size": 10
 
@@ -21,7 +21,7 @@
             "func": "loop",
             "params":{
                 "func": "simple_loop",
-                "times": 30,
+                "times": 5,
                 "loop_modules":[
                     {
                         "func": "split_graph",
@@ -33,6 +33,8 @@
                         "func": "optimize",
                         "params": {
                             "func": "optimize_independent",
+                            "model": "joint_model",
+                            "batch_strategy": "loop_edges",
                             "learn_rate": 0.01,
                             "num_sampled": 4,
                             "optimizer": "AdamOptimizer",
