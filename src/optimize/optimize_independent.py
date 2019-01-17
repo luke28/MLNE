@@ -74,6 +74,6 @@ def optimize(params, info, pre_res, **kwargs):
     for i in xrange(p.num_community):
         deal_subgraph(i)
     print "real: " + str(tmp_num[0]) + ", estimate: " + str(params["num_remain_edges"])
-    with io.open(os.path.join(p.res_path, "%topk_info.pkl"), "wb") as f:
+    with io.open(os.path.join(p.res_path, "topk_info.pkl"), "wb") as f:
         pickle.dump(topk_params, f)
     return res

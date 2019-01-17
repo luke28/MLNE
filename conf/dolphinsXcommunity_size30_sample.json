@@ -21,7 +21,7 @@
             "func": "loop",
             "params":{
                 "func": "simple_loop",
-                "times": 10,
+                "times": 5,
                 "loop_modules":[
                     {
                         "func": "split_graph",
@@ -54,10 +54,12 @@
         },
         {
             "func": "metric",
+            "is_multilabel": true,
             "params":{
                 "func": "node_classification",
+                "is_multilable": true,
                 "model":{
-                    "func": "logistic",
+                    "func": "multilabel_logistic",
                     "n_jobs": 2
                 },
                 "ground_truth": "dolphins_flag.dat",

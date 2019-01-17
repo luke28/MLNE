@@ -1,0 +1,29 @@
+{
+    "static_info" : {
+        "random_seed": 157,
+        "np_seed": 213,
+        "network_path": "dolphins_nw.dat",
+        "num_nodes": 62,
+        "community_bound": 30,
+        "num_top": 5,
+        "embedding_size": 10
+
+    },
+    "run_modules":[
+        {
+            "func": "metric",
+            "params":{
+                "embedding_path": "res/dolphinsXcommunity_size30_sample/2019-01-16-16:01:39.651072/embeddings.pkl",
+                "func": "node_classification",
+                "is_multilable": false,
+                "model":{
+                    "func": "multilabel_logistic",
+                    "n_jobs": 2
+                },
+                "ground_truth": "dolphins_flag.dat",
+                "test_size": 0.3,
+                "times": 10
+            }
+        }
+    ]
+}

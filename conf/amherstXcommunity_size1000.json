@@ -4,7 +4,7 @@
         "np_seed": 213,
         "network_path": "amherst_nw.dat",
         "num_nodes": 2235,
-        "community_size": 1000,
+        "community_bound": 1000,
         "num_top": 100,
         "embedding_size": 20
 
@@ -21,7 +21,7 @@
             "func": "loop",
             "params":{
                 "func": "simple_loop",
-                "times": 10,
+                "times": 2,
                 "loop_modules":[
                     {
                         "func": "split_graph",
@@ -38,23 +38,31 @@
                             "optimizer": "AdamOptimizer",
                             "epoch_num": 50000,
                             "show_num": 5000,
-                            "batch_size": 100
+                            "batch_size": 100,
+                            "batch_strategy": "whole_sampling",
+                            "model": "independent_model_unweighted"
+                        }
+                    },
+                    {
+                        "func": "merge_embedding",
+                        "params": {
+                            "func": "simple_merge"
+                        }
+                    },
+                    {
+                        "func": "metric",
+                        "params":{
+                            "func": "node_classification",
+                            "model":{
+                                "func": "logistic",
+                                "n_jobs": 2
+                            },
+                        "ground_truth": "amherst_flag.dat",
+                        "test_size": 0.3,
+                        "times": 3
                         }
                     }
                 ]
-            }
-        },
-        {
-            "func": "metric",
-            "params":{
-                "func": "node_classification",
-                "model":{
-                    "func": "logistic",
-                    "n_jobs": 2
-                },
-                "ground_truth": "amherst_flag.dat",
-                "test_size": 0.3,
-                "times": 10
             }
         }
     ]
