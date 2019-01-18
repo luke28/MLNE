@@ -4,7 +4,7 @@
         "np_seed": 213,
         "network_path": "amherst_nw.dat",
         "num_nodes": 2235,
-        "community_bound": 1000,
+        "community_bound": 100,
         "num_top": 100,
         "embedding_size": 20
 
