@@ -2,9 +2,9 @@
     "static_info" : {
         "random_seed": 157,
         "np_seed": 213,
-        "network_path": "amherst_nw.dat",
-        "num_nodes": 2235,
-        "community_bound": 500,
+        "network_path": "edges_hamilton.dat",
+        "num_nodes": 2314,
+        "community_bound": 200,
         "num_top": 100,
         "embedding_size": 20
 
@@ -21,7 +21,7 @@
             "func": "loop",
             "params":{
                 "func": "simple_loop",
-                "times": 10,
+                "times": 40,
                 "loop_modules":[
                     {
                         "func": "split_graph",
@@ -36,7 +36,7 @@
                             "learn_rate": 0.01,
                             "num_sampled": 4,
                             "optimizer": "AdamOptimizer",
-                            "epoch_num": 20000,
+                            "epoch_num": 2500,
                             "show_num": 5000,
                             "batch_size": 100,
                             "batch_strategy": "whole_sampling",
@@ -57,7 +57,7 @@
                                 "func": "logistic",
                                 "n_jobs": 2
                             },
-                        "ground_truth": "amherst_flag.dat",
+                        "ground_truth": "flag_hamilton.dat",
                         "test_size": 0.3,
                         "times": 3
                         }

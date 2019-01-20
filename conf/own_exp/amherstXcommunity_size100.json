@@ -36,7 +36,7 @@
                             "learn_rate": 0.01,
                             "num_sampled": 4,
                             "optimizer": "AdamOptimizer",
-                            "epoch_num": 10000,
+                            "epoch_num": 4000,
                             "show_num": 5000,
                             "batch_size": 100,
                             "batch_strategy": "whole_sampling",

@@ -62,7 +62,9 @@ def multilabel_classification(X, params):
 
 def params_handler(params, info, pre_res, **kwargs):
     if "embedding_path" in params:
-        params["embedding_path"] = os.path.join(info["home_path"], params["embedding_path"])
+        os.path.join(info["home_path"], params["embedding_path"])
+    elif "no_split_expriment" in pre_res:
+        params["embedding_path"] = pre_res["no_split_expriment"]["embedding_path"]
     else:
         params["embedding_path"] = pre_res["merge_embedding"]["embedding_path"]
     ct.check_attr(params, "is_multilabel", False)

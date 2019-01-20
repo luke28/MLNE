@@ -1,0 +1,88 @@
+{
+    "static_info" : {
+        "random_seed": 157,
+        "np_seed": 213,
+        "network_path": "edges_hamilton.dat",
+        "num_nodes": 2314,
+        "num_top":10,
+        "community_bound": 2235,
+        "embedding_size": 20
+    },
+    "run_modules":[
+        {
+            "func": "init",
+            "params": {
+                "func": "simple_init",
+                "is_directed": false
+            }
+        },
+        {
+            "func":"loop",
+            "params":{
+                "func": "simple_loop",
+                "times": 10,
+                "loop_modules":[
+                    {
+                        "func": "split_graph",
+                        "params":{
+                            "func": "simple_split_noweight"
+                        }
+                    },
+                    {
+                        "func": "split_exp_top",
+                        "params": {
+                            "func": "simple_split_node2vec",
+                            "load_data": {
+                            "func": "load_unweighted_digraph",
+                            "is_directed": false,
+                            "network_file": "amherst_nw"
+                            },
+                            "init_train":{
+                                "negative_sampling_distribution":{
+                                    "func": "out_degree_distribution"
+                                },
+                                "batch_strategy":{
+                                    "func": "weighted_edges_sampling"
+                                },
+                                "func": "node2vec_model",
+                                "batch_size": 100,
+                                "learn_rate": 0.003,
+                                "embedding_size": 20,
+                                "loss_func": "cross_entropy",
+                                "optimizer": "AdamOptimizer",
+                                "neighbor_size": 1,
+                                "num_walks":10,
+                                "walk_len":80,
+                                "window_size":10,
+                                "iter":1,
+                                "num_sampled":4,
+                                "parallel_workers":8,
+                                "negative_distortion": 1.0,
+                                "epoch_num": 10000
+                            }
+                        }
+                    },
+                    {
+                       "func": "merge_embedding",
+                       "params":{
+                           "func": "simple_merge_noweight"
+                       }
+                    },
+                    {
+                        "func": "metric",
+                        "params":{
+                            "func": "node_classification",
+                            "model":{
+                                "func": "logistic",
+                                "n_jobs": 2
+                            },
+                            "ground_truth": "flag_hamilton.dat",
+                            "test_size": 0.3,
+                            "times": 4
+                        }
+                    }
+                ]
+            }
+        }
+    ]
+}

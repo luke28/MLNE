@@ -1,0 +1,52 @@
+{
+    "static_info" : {
+        "random_seed": 157,
+        "np_seed": 213,
+        "network_path": "blog_nw.dat",
+        "num_nodes": 10312,
+        "community_size": 10312,
+        "num_top": 3,
+        "embedding_size": 128
+    },
+    "run_modules":[
+        {
+            "func": "no_split_expriment",
+            "params": {
+                "func": "deepwalk_init",
+                "load_data": {
+                "func": "load_unweighted_digraph",
+                "is_directed": false,
+                "network_file": "blog_nw"
+                },
+                "init_train":{
+                    "batch_size": 100,
+                    "learn_rate": 0.003,
+                    "embedding_size": 128,
+                    "vertex_freq_degree":false,
+                    "neighbor_size": 1,
+                    "num_walks":10,
+                    "walk_len":80,
+                    "max_memdata_size":1000000000,
+                    "seed":0,
+                    "window_size":10,
+                    "parallel_workers":1,
+                    "epoch_num": 3000
+            
+                }
+            }
+        },
+        {
+            "func": "metric",
+            "params":{
+                "func": "node_classification",
+                "model":{
+                    "func": "multilabel_logistic",
+                    "n_jobs": 2
+                },
+                "ground_truth": "blog_flag.dat",
+                "test_size": 0.3,
+                "times": 10
+            }
+        }
+    ]
+}
