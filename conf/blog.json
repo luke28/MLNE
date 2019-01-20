@@ -1,0 +1,70 @@
+{
+    "static_info" : {
+        "random_seed": 157,
+        "np_seed": 213,
+        "network_path": "blog_nw.dat",
+        "num_nodes": 10312,
+        "community_bound": 10311,
+        "num_top": 1,
+        "embedding_size": 128
+
+    },
+    "run_modules":[
+        {
+            "func": "init",
+            "params": {
+                "func": "simple_init",
+                "is_directed": false
+            }
+        },
+        {
+            "func": "loop",
+            "params":{
+                "func": "simple_loop",
+                "times": 1,
+                "loop_modules":[
+                    {
+                        "func": "split_graph",
+                        "params":{
+                            "func": "simple_split"
+                        }
+                    },
+                    {
+                        "func": "optimize",
+                        "params": {
+                            "func": "optimize_independent",
+                            "learn_rate": 0.03,
+                            "num_sampled": 4,
+                            "optimizer": "AdamOptimizer",
+                            "epoch_num": 200000,
+                            "show_num": 5000,
+                            "batch_size": 100,
+                            "batch_strategy": "whole_sampling",
+                            "model": "independent_model_unweighted"
+                        }
+                    },
+                    {
+                        "func": "merge_embedding",
+                        "params": {
+                            "func": "simple_merge"
+                        }
+                    },
+                    {
+                        "func": "metric",
+                        "params":{
+                            "func": "node_classification",
+                            "is_multilabel": true,
+                            "model":{
+                                "func": "multilabel_logistic",
+                                "n_jobs": 2
+                            },
+                        "ground_truth": "blog_flag.dat",
+                        "test_size": 0.3,
+                        "times": 3
+                        }
+                    }
+                ]
+            }
+        }
+    ]
+}
