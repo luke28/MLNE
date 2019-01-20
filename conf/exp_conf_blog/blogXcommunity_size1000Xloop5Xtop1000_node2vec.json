@@ -2,11 +2,11 @@
     "static_info" : {
         "random_seed": 157,
         "np_seed": 213,
-        "network_path": "edges_hamilton.dat",
-        "num_nodes": 2314,
-        "num_top":100,
+        "network_path": "blog_nw.dat",
+        "num_nodes": 10312,
+        "num_top":500,
         "community_bound": 1000,
-        "embedding_size": 20
+        "embedding_size": 128
     },
     "run_modules":[
         {
@@ -20,7 +20,7 @@
             "func":"loop",
             "params":{
                 "func": "simple_loop",
-                "times": 10,
+                "times": 5,
                 "loop_modules":[
                     {
                         "func": "split_graph",
@@ -31,25 +31,33 @@
                     {
                         "func": "split_exp_top",
                         "params": {
-                            "func": "simple_split_deepwalk",
+                            "func": "simple_split_node2vec",
                             "load_data": {
                             "func": "load_unweighted_digraph",
                             "is_directed": false,
-                            "network_file": "dolphins_nw"
+                            "network_file": "amherst_nw"
                             },
                             "init_train":{
+                                "negative_sampling_distribution":{
+                                    "func": "out_degree_distribution"
+                                },
+                                "batch_strategy":{
+                                    "func": "weighted_edges_sampling"
+                                },
+                                "func": "node2vec_model",
                                 "batch_size": 100,
                                 "learn_rate": 0.003,
-                                "embedding_size": 20,
-                                "vertex_freq_degree":false,
+                                "embedding_size": 128,
+                                "loss_func": "cross_entropy",
+                                "optimizer": "AdamOptimizer",
                                 "neighbor_size": 1,
                                 "num_walks":10,
                                 "walk_len":80,
-                                "num_sampled":4,
-                                "max_memdata_size":1000000000,
-                                "seed":0,
                                 "window_size":10,
-                                "parallel_workers":1,
+                                "iter":1,
+                                "num_sampled":4,
+                                "parallel_workers":8,
+                                "negative_distortion": 1.0,
                                 "epoch_num": 3200
                             }
                         }
@@ -64,11 +72,12 @@
                         "func": "metric",
                         "params":{
                             "func": "node_classification",
+                            "is_multilabel": true,
                             "model":{
-                                "func": "logistic",
+                                "func": "multilabel_logistic",
                                 "n_jobs": 2
                             },
-                            "ground_truth": "flag_hamilton.dat",
+                            "ground_truth": "blog_flag.dat",
                             "test_size": 0.3,
                             "times": 4
                         }

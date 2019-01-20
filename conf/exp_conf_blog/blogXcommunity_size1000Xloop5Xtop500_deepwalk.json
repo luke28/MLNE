@@ -5,7 +5,7 @@
         "network_path": "blog_nw.dat",
         "num_nodes": 10312,
         "num_top":1000,
-        "community_bound": 500,
+        "community_bound": 1000,
         "embedding_size": 128
     },
     "run_modules":[
@@ -25,42 +25,39 @@
                     {
                         "func": "split_graph",
                         "params":{
-                            "func": "simple_split"
+                            "func": "simple_split_noweight"
                         }
                     },
                     {
                         "func": "split_exp_top",
                         "params": {
-                            "func": "simple_split_line",
+                            "func": "simple_split_deepwalk",
                             "load_data": {
                             "func": "load_unweighted_digraph",
                             "is_directed": false,
-                            "network_file": "amherst_nw"
+                            "network_file": "dolphins_nw"
                             },
                             "init_train":{
-                                "negative_sampling_distribution":{
-                                    "func": "out_degree_distribution"
-                                },
-                                "batch_strategy":{
-                                    "func": "weighted_edges_sampling"
-                                },
-                                "func": "line_model",
-                                "batch_size": 10,
+                                "batch_size": 100,
                                 "learn_rate": 0.003,
                                 "embedding_size": 128,
-                                "loss_func": "cross_entropy",
-                                "optimizer": "AdamOptimizer",
+                                "vertex_freq_degree":false,
                                 "neighbor_size": 1,
-                                "num_sampled": 4,
-                                "negative_distortion": 1.0,
-                                "epoch_num": 5000
+                                "num_walks":10,
+                                "walk_len":80,
+                                "num_sampled":4,
+                                "max_memdata_size":1000000000,
+                                "seed":0,
+                                "window_size":10,
+                                "parallel_workers":1,
+                                "epoch_num": 1800
                             }
                         }
                     },
                     {
                        "func": "merge_embedding",
                        "params":{
-                           "func": "simple_merge"
+                           "func": "simple_merge_noweight"
                        }
                     },
                     {
@@ -73,7 +70,6 @@
                                 "n_jobs": 2
                             },
                             "ground_truth": "blog_flag.dat",
-                            "test_size": 0.3,
                             "times": 4
                         }
                     }

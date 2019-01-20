@@ -2,11 +2,11 @@
     "static_info" : {
         "random_seed": 157,
         "np_seed": 213,
-        "network_path": "edges_hamilton.dat",
-        "num_nodes": 2314,
-        "num_top":100,
-        "community_bound": 500,
-        "embedding_size": 20
+        "network_path": "blog_nw.dat",
+        "num_nodes": 10312,
+        "num_top":1000,
+        "community_bound": 4000,
+        "embedding_size": 128
     },
     "run_modules":[
         {
@@ -47,7 +47,7 @@
                                 "func": "node2vec_model",
                                 "batch_size": 100,
                                 "learn_rate": 0.003,
-                                "embedding_size": 20,
+                                "embedding_size": 128,
                                 "loss_func": "cross_entropy",
                                 "optimizer": "AdamOptimizer",
                                 "neighbor_size": 1,
@@ -58,7 +58,7 @@
                                 "num_sampled":4,
                                 "parallel_workers":8,
                                 "negative_distortion": 1.0,
-                                "epoch_num": 5000
+                                "epoch_num": 10000
                             }
                         }
                     },
