@@ -21,7 +21,7 @@
             "func": "loop",
             "params":{
                 "func": "simple_loop",
-                "times": 10,
+                "times": 40,
                 "loop_modules":[
                     {
                         "func": "split_graph",
@@ -36,7 +36,11 @@
                             "learn_rate": 0.01,
                             "num_sampled": 4,
                             "optimizer": "AdamOptimizer",
+<<<<<<< HEAD
                             "epoch_num": 20000,
+=======
+                            "epoch_num": 2500,
+>>>>>>> 7b3ce2b182b146f90ac3ad0aaae68c31f255864f
                             "show_num": 5000,
                             "batch_size": 100,
                             "batch_strategy": "whole_sampling",
