@@ -52,8 +52,8 @@ def multilabel_classification(X, params):
         ret = mll.infer(clf, X_test, y_test)
         acc += ret[1]
         y_score = ret[0]
-        micro_f1 = f1_score(y_test, y_score, average='micro')
-        macro_f1 = f1_score(y_test, y_score, average='macro')
+        micro_f1 += f1_score(y_test, y_score, average='micro')
+        macro_f1 += f1_score(y_test, y_score, average='macro')
 
     acc /= float(params["times"])
     micro_f1 /= float(params["times"])
