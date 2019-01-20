@@ -52,8 +52,8 @@ def multilabel_classification(X, params):
         ret = mll.infer(clf, X_test, y_test)
         acc += ret[1]
         y_score = ret[0]
-        micro_f1 = f1_score(y_test, y_score, average='micro')
-        macro_f1 = f1_score(y_test, y_score, average='macro')
+        micro_f1 += f1_score(y_test, y_score, average='micro')
+        macro_f1 += f1_score(y_test, y_score, average='macro')
 
     acc /= float(params["times"])
     micro_f1 /= float(params["times"])
@@ -62,9 +62,7 @@ def multilabel_classification(X, params):
 
 def params_handler(params, info, pre_res, **kwargs):
     if "embedding_path" in params:
-        os.path.join(info["home_path"], params["embedding_path"])
-    elif "no_split_expriment" in pre_res:
-        params["embedding_path"] = pre_res["no_split_expriment"]["embedding_path"]
+        params["embedding_path"] = os.path.join(info["home_path"], params["embedding_path"])
     else:
         params["embedding_path"] = pre_res["merge_embedding"]["embedding_path"]
     ct.check_attr(params, "is_multilabel", False)
