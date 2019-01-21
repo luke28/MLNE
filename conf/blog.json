@@ -33,10 +33,10 @@
                         "func": "optimize",
                         "params": {
                             "func": "optimize_independent",
-                            "learn_rate": 0.03,
+                            "learn_rate": 0.003,
                             "num_sampled": 4,
                             "optimizer": "AdamOptimizer",
-                            "epoch_num": 200000,
+                            "epoch_num": 300000,
                             "show_num": 5000,
                             "batch_size": 100,
                             "batch_strategy": "whole_sampling",

@@ -19,8 +19,6 @@ def batch_strategy(G, sub_params, topk_params, rmapp, params, info):
         for i in xrange(2, 4):
             neg_edge_weight[i] = 1.0 / float(info["q"][2])
         
-        at_pos = AliasTable(pos_edge_weight)
-        at_neg = AliasTable(neg_edge_weight)
         
         for e in  G.edges():
             u, v = e
@@ -32,6 +30,11 @@ def batch_strategy(G, sub_params, topk_params, rmapp, params, info):
                 pos_edge_lst[1].append((u, v))
             else:
                 pos_edge_lst[0].append((u, v))
+        for i in xrange(3):
+            if len(pos_edge_lst[i]) == 0:
+                pos_edge_weight[i] = 0.0
+        at_pos = AliasTable(pos_edge_weight)
+        at_neg = AliasTable(neg_edge_weight)
 
         for u in G.nodes():
             u = rmapp[u]
@@ -51,10 +54,7 @@ def batch_strategy(G, sub_params, topk_params, rmapp, params, info):
             batch_c_pos = np.zeros(p.batch_size, dtype = np.int32)
             batch_c_neg = np.zeros(p.batch_size * p.num_sampled, dtype = np.int32)
             for i in xrange(p.batch_size):
-                if len(pos_edge_lst) == 0:
-                    idx_pos = 0
-                else:
-                    idx_pos = at_pos.sample()
+                idx_pos = at_pos.sample()
                 idx = random.randint(0, len(pos_edge_lst[idx_pos]) - 1)
                 batch_w_pos[i], batch_c_pos[i] = pos_edge_lst[idx_pos][idx]
                 for j in xrange(p.num_sampled):
