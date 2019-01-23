@@ -37,12 +37,15 @@ def classification(X, params):
 
 def multilabel_classification(X, params):
     X_scaled = scale(X)
+    n = len(X)
     if "label_mode" in params:
-        y = dh.load_multilabel_ground_truth(params["ground_truth"], params["label_mode"])
+        y = dh.load_multilabel_ground_truth(params["ground_truth"], n, params["label_mode"])
     else:
-        y = dh.load_multilabel_ground_truth(params["ground_truth"])
+        y = dh.load_multilabel_ground_truth(params["ground_truth"], n)
 
-    y = y[:len(X)]
+    print y.shape
+    print X.shape
+    y = y[:n]
     acc = 0.0
     micro_f1 = 0.0
     macro_f1 = 0.0

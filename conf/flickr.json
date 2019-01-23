@@ -1,0 +1,29 @@
+{
+    "static_info" : {
+        "random_seed": 157,
+        "np_seed": 213,
+        "network_path": "flicker_nw.dat",
+        "num_nodes": 80513,
+        "community_bound": 80513,
+        "num_top": 1,
+        "embedding_size": 128
+
+    },
+    "run_modules":[
+        {
+            "func": "metric",
+            "params":{
+                "func": "node_classification",
+                "is_multilabel": true,
+                "embedding_path": "data/embeddings.pkl",
+                "model":{
+                    "func": "multilabel_logistic",
+                    "n_jobs": 2
+                },
+                "ground_truth": "flicker_flag_new.dat",
+                "test_size": 0.3,
+                "times": 4
+            }
+        }
+    ]
+}

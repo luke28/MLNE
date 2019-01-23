@@ -48,7 +48,7 @@ class DataHandler(object):
         return [i[1] for i in lst]
 
     @staticmethod
-    def load_multilabel_ground_truth(file_path, mode = "MultiLine"):
+    def load_multilabel_ground_truth(file_path, num_nodes, mode = "MultiLine"):
         if mode != "SingleLine" and mode != "MultiLine":
             raise ValueError("mode type is not supported")
         lst = []
@@ -70,7 +70,9 @@ class DataHandler(object):
             lst.sort()
             lst = [i[1:] for i in lst]
         else:
-            lst = [dic[k] for k in sorted(dic.keys())]
+            lst = [[] for _ in xrange(num_nodes)]
+            for k in dic.keys():
+                lst[k] = dic[k]
         mlb = MultiLabelBinarizer()
         return mlb.fit_transform(lst)
 
