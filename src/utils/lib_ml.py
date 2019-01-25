@@ -24,14 +24,14 @@ class MachineLearningLib(object):
 
     @staticmethod
     def multilabel_logistic(X, y, params):
-        clf_log = LogisticRegression(multi_class = 'multinomial', solver = 'newton-cg', max_iter = 10000, n_jobs=params['n_jobs'] if 'n_jobs' in params else 1)
+        clf_log = LogisticRegression(multi_class = 'multinomial', solver = 'sag', max_iter = 10000, n_jobs=params['n_jobs'] if 'n_jobs' in params else 1)
         clf = OneVsRestClassifier(clf_log).fit(X, y)
         return clf
 
 
     @staticmethod
     def logistic(X, y, params):
-        clf = LogisticRegression(multi_class = 'multinomial', solver = 'newton-cg', max_iter = 10000, n_jobs=params['n_jobs'] if 'n_jobs' in params else 1)
+        clf = LogisticRegression(multi_class = 'multinomial', solver = 'sag', max_iter = 10000, n_jobs=params['n_jobs'] if 'n_jobs' in params else 1)
         clf.fit(X, y)
         return clf
 
