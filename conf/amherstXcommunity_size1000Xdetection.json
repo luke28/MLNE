@@ -1,0 +1,26 @@
+{
+    "static_info" : {
+        "random_seed": 157,
+        "np_seed": 213,
+        "network_path": "amherst_nw.dat",
+        "num_nodes": 2235,
+        "community_bound": 1000,
+        "num_top": 100,
+        "embedding_size": 20
+
+    },
+    "run_modules":[
+            {
+                "func": "metric",
+                "params":{
+                    "func": "community_detection",
+                    "model":{
+                        "func": "kmeans"
+                    },
+                "evaluate": "ARI",
+                "embedding_path": "res/amherstXcommunity_size1000/2019-01-17-09:53:30.302284/embeddings.pkl",
+                "ground_truth": "amherst_flag.dat"
+            }
+        }
+    ]
+}
